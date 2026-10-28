@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lacuna</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="page" aria-selected="true">This job</button>
+    <button role="tab" data-tab="ranked">Ranked</button>
+    <button role="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <section id="page" class="view">
+    <div id="status" class="status" hidden></div>
+    <div id="nocv" class="empty" hidden>
+      <p>Add your CV first. It stays in this browser.</p>
+      <button class="primary" data-goto="settings">Add CV</button>
+    </div>
+    <div id="result" hidden>
+      <header class="job">
+        <h1 id="jobTitle"></h1>
+        <p id="jobMeta" class="muted"></p>
+      </header>
+      <div class="fit">
+        <div class="fitHead"><span>Fit</span><strong id="fitPct"></strong></div>
+        <div class="bar"><div id="fitBar"></div></div>
+        <p id="verdict" class="verdict"></p>
+      </div>
+      <ul class="chips">
+        <li id="chipLocation"></li>
+        <li id="chipSeniority"></li>
+        <li id="chipMust"></li>
+      </ul>
+      <div id="gapsBox" class="list" hidden><h2>Gaps in this job</h2><p class="muted small">Must-haves your CV doesn't cover.</p><ul id="gaps"></ul></div>
+      <div id="partialBox" class="list" hidden><h2>Partial matches</h2><ul id="partial"></ul></div>
+      <details id="metBox" class="list" hidden><summary>Met <span id="metCount"></span></summary><ul id="met"></ul></details>
+      <p id="truncNote" class="muted small" hidden>Long CV and posting: the end of the longer one was cut to fit 4,096 tokens.</p>
+      <p class="muted small" id="timing"></p>
+    </div>
+    <div class="actions"><button id="scoreBtn" class="primary">Score this page</button></div>
+    <p id="permNote" class="muted small" hidden>This site is not on the built-in list.
+      <button id="allowAll" class="link">Allow Lacuna to read job pages on any site</button>, or click the Lacuna icon on the page first.</p>
+  </section>
+
+  <section id="ranked" class="view" hidden>
+    <div class="rankHead"><p class="muted small">Jobs you scored, best fit first.</p><button id="clearHist" class="link">Clear</button></div>
+    <ol id="rankList" class="rank"></ol>
+    <p id="rankEmpty" class="empty">Nothing scored yet.</p>
+  </section>
+
+  <section id="settings" class="view" hidden>
+    <h2>Your CV</h2>
+    <p class="muted small">Paste it, or load a .txt, .md or .html file. It is stored only in this browser and never sent anywhere.</p>
+    <textarea id="cvText" rows="10" placeholder="Paste your CV here"></textarea>
+    <div class="row"><input type="file" id="cvFile" accept=".txt,.md,.html,.htm"><span><button id="deleteCv" class="link">Delete CV</button> <button id="saveCv" class="primary">Save CV</button></span></div>
+    <p id="cvSaved" class="muted small"></p>
+
+    <h2>Model</h2>
+    <div id="tiers" class="tiers"></div>
+    <details class="small">
+      <summary>Advanced</summary>
+      <label>Hugging Face repo for this tier <input id="repo" type="text" spellcheck="false"></label>
+      <label>Or load the model files from a folder <input id="folder" type="file" webkitdirectory multiple></label>
+      <button id="clearModels" class="link">Delete downloaded models</button>
+      <p id="device" class="muted"></p>
+    </details>
+
+    <h2>Location</h2>
+    <label class="check"><input type="checkbox" id="usRemote"> I accept US-only remote roles as a contractor</label>
+    <p class="muted small">The model treats US-only remote roles as not open to people outside the US. With this on, they show as "US-remote" instead of "Not eligible".</p>
+    <label class="check"><input type="checkbox" id="autoScore"> Score automatically when I switch to a job page</label>
+  </section>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

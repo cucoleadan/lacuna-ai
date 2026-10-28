@@ -1,0 +1,25 @@
+# Scraped postings and anything derived from them stay local (see PLAN.md, "Data rules")
+data/
+*.db
+*.db-*
+*.jsonl
+*.parquet
+
+# secrets
+.env
+
+# training outputs
+artifacts/
+checkpoints/
+
+__pycache__/
+.venv/
+
+# private settings: endpoint, accounts, local paths
+local.json
+*.private.md
+
+# private: check against the author's own job-search verdicts
+scripts/labeller_check.py
+scripts/student_check.py
+export/

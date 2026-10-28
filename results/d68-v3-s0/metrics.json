@@ -1,0 +1,174 @@
+{
+ "model": "jhu-clsp/ettin-encoder-68m",
+ "args": {
+  "model": "jhu-clsp/ettin-encoder-68m",
+  "data": "<kaggle-dataset>",
+  "out": "/kaggle/working/out",
+  "max_len": 4096,
+  "epochs": 3,
+  "lr": 0.0001,
+  "tokens_per_batch": 8192,
+  "accum": 4,
+  "eval_tokens": 16384,
+  "w_line": 0.5,
+  "limit": 0,
+  "seed": 0,
+  "optim": "adamw",
+  "teacher": "/kaggle/input/**/teacher_r*.jsonl",
+  "alpha": 0.5
+ },
+ "epochs": [
+  {
+   "epoch": 1,
+   "minutes": 35.8,
+   "val": {
+    "verdict": {
+     "acc": 0.7874,
+     "macro_f1": 0.6855,
+     "ece": 0.0319
+    },
+    "location": {
+     "acc": 0.8819,
+     "macro_f1": 0.8824,
+     "ece": 0.0122
+    },
+    "seniority": {
+     "acc": 0.7417,
+     "macro_f1": 0.7049,
+     "ece": 0.0292
+    },
+    "must_met": {
+     "acc": 0.8378,
+     "macro_f1": 0.8333,
+     "ece": 0.0204
+    },
+    "line_met": {
+     "acc": 0.8938,
+     "macro_f1": 0.6756
+    }
+   }
+  },
+  {
+   "epoch": 2,
+   "minutes": 41.7,
+   "val": {
+    "verdict": {
+     "acc": 0.8039,
+     "macro_f1": 0.6925,
+     "ece": 0.0233
+    },
+    "location": {
+     "acc": 0.911,
+     "macro_f1": 0.9113,
+     "ece": 0.0249
+    },
+    "seniority": {
+     "acc": 0.7858,
+     "macro_f1": 0.741,
+     "ece": 0.0393
+    },
+    "must_met": {
+     "acc": 0.8575,
+     "macro_f1": 0.8481,
+     "ece": 0.0161
+    },
+    "line_met": {
+     "acc": 0.9003,
+     "macro_f1": 0.6966
+    }
+   }
+  },
+  {
+   "epoch": 3,
+   "minutes": 41.6,
+   "val": {
+    "verdict": {
+     "acc": 0.8118,
+     "macro_f1": 0.7135,
+     "ece": 0.0222
+    },
+    "location": {
+     "acc": 0.9102,
+     "macro_f1": 0.9105,
+     "ece": 0.0152
+    },
+    "seniority": {
+     "acc": 0.7945,
+     "macro_f1": 0.7467,
+     "ece": 0.0202
+    },
+    "must_met": {
+     "acc": 0.8677,
+     "macro_f1": 0.8602,
+     "ece": 0.0144
+    },
+    "line_met": {
+     "acc": 0.9015,
+     "macro_f1": 0.7007
+    }
+   }
+  }
+ ],
+ "temperatures": {
+  "verdict": 0.9544,
+  "location": 0.9395,
+  "seniority": 0.8823,
+  "must_met": 0.9883
+ },
+ "test": {
+  "verdict": {
+   "acc": 0.814,
+   "macro_f1": 0.6862,
+   "ece": 0.0249
+  },
+  "location": {
+   "acc": 0.9046,
+   "macro_f1": 0.9032,
+   "ece": 0.0179
+  },
+  "seniority": {
+   "acc": 0.7917,
+   "macro_f1": 0.7177,
+   "ece": 0.0205
+  },
+  "must_met": {
+   "acc": 0.8243,
+   "macro_f1": 0.8102,
+   "ece": 0.0468
+  },
+  "line_met": {
+   "acc": 0.9052,
+   "macro_f1": 0.7085
+  }
+ },
+ "test_v1": {
+  "verdict": {
+   "acc": 0.8299,
+   "macro_f1": 0.6725,
+   "ece": 0.0259
+  },
+  "location": {
+   "acc": 0.8972,
+   "macro_f1": 0.8909,
+   "ece": 0.0268
+  },
+  "seniority": {
+   "acc": 0.8084,
+   "macro_f1": 0.6779,
+   "ece": 0.0219
+  },
+  "must_met": {
+   "acc": 0.8261,
+   "macro_f1": 0.8165,
+   "ece": 0.0497
+  },
+  "line_met": {
+   "acc": 0.9047,
+   "macro_f1": 0.7073
+  },
+  "n": 788
+ },
+ "params_m": 68.2,
+ "dataset": "v3 + distil (13,970 teacher-scored pairs)",
+ "gpu": "Kaggle 2xT4"
+}

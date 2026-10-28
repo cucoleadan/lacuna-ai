@@ -1,0 +1,61 @@
+:root {
+  --bg: #ffffff; --fg: #1b1d21; --muted: #646a73; --line: #e3e5e8; --card: #f6f7f8;
+  --accent: #2f6fde; --good: #1f8a4c; --warn: #b26b00; --bad: #c2362f;
+  --good-bg: #e6f4ec; --warn-bg: #fbf0dc; --bad-bg: #fbe7e5; --info-bg: #e8effc;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17191c; --fg: #e7e9ec; --muted: #9aa1ab; --line: #2c3036; --card: #1f2226;
+    --accent: #6b9cf0; --good: #5cc28a; --warn: #e3a547; --bad: #ef7d75;
+    --good-bg: #183224; --warn-bg: #352a14; --bad-bg: #3a1d1b; --info-bg: #1b2a44;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.tabs { display: flex; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.tabs button { flex: 1; padding: 10px 0; border: 0; background: none; color: var(--muted); font: inherit; cursor: pointer; border-bottom: 2px solid transparent; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+.view { padding: 14px 16px 24px; }
+h1 { font-size: 16px; margin: 0 0 2px; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 18px 0 8px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.empty { color: var(--muted); text-align: center; padding: 24px 0; }
+.status { background: var(--info-bg); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; }
+.status.error { background: var(--bad-bg); color: var(--bad); }
+.fit { background: var(--card); border-radius: 8px; padding: 12px; margin: 12px 0; }
+.fitHead { display: flex; justify-content: space-between; align-items: baseline; }
+.fitHead strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 6px 0 8px; }
+.bar div { height: 100%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+.verdict { margin: 0; font-weight: 600; }
+.verdict.apply { color: var(--good); } .verdict.stretch { color: var(--warn); } .verdict.skip { color: var(--bad); }
+.chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { padding: 4px 9px; border-radius: 999px; font-size: 12px; background: var(--card); }
+.chips li.good { background: var(--good-bg); color: var(--good); }
+.chips li.warn { background: var(--warn-bg); color: var(--warn); }
+.chips li.bad { background: var(--bad-bg); color: var(--bad); }
+.list ul { margin: 0; padding-left: 18px; }
+.list li { margin: 4px 0; }
+details.list summary { cursor: pointer; margin-top: 16px; color: var(--muted); font-size: 13px; }
+.actions { margin-top: 16px; }
+button.primary { background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 8px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+button.primary:disabled { opacity: .5; cursor: default; }
+button.link { background: none; border: 0; color: var(--accent); padding: 0; font: inherit; cursor: pointer; text-decoration: underline; }
+textarea, input[type="text"] { width: 100%; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: 12px/1.4 ui-monospace, monospace; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+label { display: block; margin: 8px 0; }
+label.check { display: flex; gap: 8px; align-items: flex-start; }
+.tiers { display: grid; gap: 8px; }
+.tier { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: 10px; cursor: pointer; margin: 0; }
+.tier:has(input:checked) { border-color: var(--accent); }
+.tier small { display: block; color: var(--muted); }
+.rankHead { display: flex; justify-content: space-between; align-items: center; }
+.rank { padding: 0; list-style: none; margin: 0; }
+.rank li { display: grid; grid-template-columns: 44px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.rank .score { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.rank a { color: var(--fg); text-decoration: none; font-weight: 600; }
+.rank a:hover { text-decoration: underline; }
+.rank .sub { color: var(--muted); font-size: 12px; }

@@ -1,0 +1,262 @@
+{
+ "model": "jhu-clsp/ettin-encoder-68m",
+ "args": {
+  "model": "jhu-clsp/ettin-encoder-68m",
+  "data": "<kaggle-dataset>",
+  "out": "out",
+  "max_len": 4096,
+  "epochs": 6,
+  "lr": 0.0001,
+  "tokens_per_batch": 8192,
+  "accum": 4,
+  "eval_tokens": 16384,
+  "w_line": 0.5,
+  "limit": 0,
+  "seed": 0,
+  "optim": "adamw"
+ },
+ "epochs": [
+  {
+   "epoch": 1,
+   "minutes": 14.4,
+   "val": {
+    "verdict": {
+     "acc": 0.7087,
+     "macro_f1": 0.3942,
+     "ece": 0.0984
+    },
+    "location": {
+     "acc": 0.7575,
+     "macro_f1": 0.7556,
+     "ece": 0.0206
+    },
+    "seniority": {
+     "acc": 0.622,
+     "macro_f1": 0.4303,
+     "ece": 0.0619
+    },
+    "must_met": {
+     "acc": 0.7803,
+     "macro_f1": 0.7499,
+     "ece": 0.0344
+    },
+    "line_met": {
+     "acc": 0.8823,
+     "macro_f1": 0.6308
+    }
+   }
+  },
+  {
+   "epoch": 2,
+   "minutes": 17.4,
+   "val": {
+    "verdict": {
+     "acc": 0.7827,
+     "macro_f1": 0.6063,
+     "ece": 0.0402
+    },
+    "location": {
+     "acc": 0.8764,
+     "macro_f1": 0.8761,
+     "ece": 0.0225
+    },
+    "seniority": {
+     "acc": 0.7291,
+     "macro_f1": 0.6667,
+     "ece": 0.0435
+    },
+    "must_met": {
+     "acc": 0.8378,
+     "macro_f1": 0.8286,
+     "ece": 0.015
+    },
+    "line_met": {
+     "acc": 0.8927,
+     "macro_f1": 0.6728
+    }
+   }
+  },
+  {
+   "epoch": 3,
+   "minutes": 17.4,
+   "val": {
+    "verdict": {
+     "acc": 0.7724,
+     "macro_f1": 0.6101,
+     "ece": 0.0407
+    },
+    "location": {
+     "acc": 0.8843,
+     "macro_f1": 0.884,
+     "ece": 0.0407
+    },
+    "seniority": {
+     "acc": 0.7362,
+     "macro_f1": 0.6443,
+     "ece": 0.0651
+    },
+    "must_met": {
+     "acc": 0.8173,
+     "macro_f1": 0.8155,
+     "ece": 0.0467
+    },
+    "line_met": {
+     "acc": 0.8973,
+     "macro_f1": 0.6909
+    }
+   }
+  },
+  {
+   "epoch": 4,
+   "minutes": 17.5,
+   "val": {
+    "verdict": {
+     "acc": 0.8024,
+     "macro_f1": 0.6888,
+     "ece": 0.0643
+    },
+    "location": {
+     "acc": 0.8961,
+     "macro_f1": 0.8961,
+     "ece": 0.0476
+    },
+    "seniority": {
+     "acc": 0.7339,
+     "macro_f1": 0.6399,
+     "ece": 0.1391
+    },
+    "must_met": {
+     "acc": 0.8575,
+     "macro_f1": 0.8515,
+     "ece": 0.0618
+    },
+    "line_met": {
+     "acc": 0.9001,
+     "macro_f1": 0.6988
+    }
+   }
+  },
+  {
+   "epoch": 5,
+   "minutes": 17.4,
+   "val": {
+    "verdict": {
+     "acc": 0.7835,
+     "macro_f1": 0.6502,
+     "ece": 0.1277
+    },
+    "location": {
+     "acc": 0.9039,
+     "macro_f1": 0.9038,
+     "ece": 0.0536
+    },
+    "seniority": {
+     "acc": 0.7449,
+     "macro_f1": 0.6738,
+     "ece": 0.1678
+    },
+    "must_met": {
+     "acc": 0.8575,
+     "macro_f1": 0.8478,
+     "ece": 0.0855
+    },
+    "line_met": {
+     "acc": 0.8986,
+     "macro_f1": 0.6978
+    }
+   }
+  },
+  {
+   "epoch": 6,
+   "minutes": 17.4,
+   "val": {
+    "verdict": {
+     "acc": 0.7882,
+     "macro_f1": 0.6738,
+     "ece": 0.1433
+    },
+    "location": {
+     "acc": 0.9047,
+     "macro_f1": 0.9044,
+     "ece": 0.0647
+    },
+    "seniority": {
+     "acc": 0.748,
+     "macro_f1": 0.6937,
+     "ece": 0.1877
+    },
+    "must_met": {
+     "acc": 0.8646,
+     "macro_f1": 0.8568,
+     "ece": 0.0875
+    },
+    "line_met": {
+     "acc": 0.9006,
+     "macro_f1": 0.6991
+    }
+   }
+  }
+ ],
+ "temperatures": {
+  "verdict": 1.7422,
+  "location": 1.4799,
+  "seniority": 2.1993,
+  "must_met": 1.6189
+ },
+ "test": {
+  "verdict": {
+   "acc": 0.7901,
+   "macro_f1": 0.6478,
+   "ece": 0.0302
+  },
+  "location": {
+   "acc": 0.8879,
+   "macro_f1": 0.8856,
+   "ece": 0.0167
+  },
+  "seniority": {
+   "acc": 0.7647,
+   "macro_f1": 0.6139,
+   "ece": 0.0316
+  },
+  "must_met": {
+   "acc": 0.8235,
+   "macro_f1": 0.8115,
+   "ece": 0.0443
+  },
+  "line_met": {
+   "acc": 0.9008,
+   "macro_f1": 0.6977
+  }
+ },
+ "test_v1": {
+  "verdict": {
+   "acc": 0.8084,
+   "macro_f1": 0.6382,
+   "ece": 0.0334
+  },
+  "location": {
+   "acc": 0.8832,
+   "macro_f1": 0.8776,
+   "ece": 0.0194
+  },
+  "seniority": {
+   "acc": 0.7906,
+   "macro_f1": 0.5772,
+   "ece": 0.055
+  },
+  "must_met": {
+   "acc": 0.8325,
+   "macro_f1": 0.8251,
+   "ece": 0.0481
+  },
+  "line_met": {
+   "acc": 0.8994,
+   "macro_f1": 0.6945
+  },
+  "n": 788
+ },
+ "params_m": 68.2,
+ "dataset": "v2",
+ "gpu": "Kaggle 2xT4"
+}

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jobfit speed test</title>
+<style>
+  :root { --bg:#fafaf9; --fg:#1c1917; --muted:#78716c; --line:#e7e5e4; --accent:#2563eb; --ok:#15803d; --bad:#b91c1c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1c1917; --fg:#f5f5f4; --muted:#a8a29e; --line:#44403c; --accent:#60a5fa; --ok:#4ade80; --bad:#f87171; } }
+  body { background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; max-width:860px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 20px; }
+  fieldset { border:1px solid var(--line); border-radius:8px; margin:0 0 16px; padding:12px 16px; }
+  legend { color:var(--muted); font-size:13px; padding:0 6px; }
+  label { display:block; margin:4px 0; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:6px; padding:8px 16px; font-size:15px; cursor:pointer; margin-right:8px; }
+  button:disabled { opacity:.5; cursor:default; }
+  table { border-collapse:collapse; width:100%; margin:16px 0; font-variant-numeric:tabular-nums; }
+  th, td { border-bottom:1px solid var(--line); padding:6px 8px; text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  #env, #log { font:12px/1.5 ui-monospace, monospace; white-space:pre-wrap; color:var(--muted); }
+  #log { max-height:240px; overflow:auto; border:1px solid var(--line); border-radius:8px; padding:8px; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+</style>
+</head>
+<body>
+<h1>jobfit speed test</h1>
+<p class="sub">Times one encoder forward pass (CV + job posting) in this browser. Synthetic text only, nothing is uploaded. First run downloads the models from Hugging Face and caches them.</p>
+
+<div id="env">Checking WebGPU…</div>
+
+<fieldset><legend>Models (download size)</legend>
+  <label><input type="checkbox" name="m" value="answerdotai/ModernBERT-base|fp16" checked> ModernBERT-base, fp16 (300 MB)</label>
+  <label><input type="checkbox" name="m" value="answerdotai/ModernBERT-base|q4f16" checked> ModernBERT-base, q4f16 (140 MB)</label>
+  <label><input type="checkbox" name="m" value="onnx-community/mmBERT-base-ONNX|fp16" checked> mmBERT-base (Laya-multilingual base), fp16 (616 MB)</label>
+  <label><input type="checkbox" name="m" value="onnx-community/mmBERT-base-ONNX|q4f16"> mmBERT-base, q4f16 (457 MB)</label>
+  <label><input type="checkbox" name="m" value="answerdotai/ModernBERT-large|q4f16"> ModernBERT-large, q4f16 (larger, optional)</label>
+</fieldset>
+
+<fieldset><legend>Input lengths (tokens)</legend>
+  <label><input type="checkbox" name="len" value="1024"> 1,024</label>
+  <label><input type="checkbox" name="len" value="2048" checked> 2,048</label>
+  <label><input type="checkbox" name="len" value="3072" checked> 3,072 (median CV + posting is ~2,550)</label>
+  <label><input type="checkbox" name="len" value="4096" checked> 4,096 (covers every pair we measured)</label>
+</fieldset>
+
+<button id="run">Run</button><button id="copy" disabled>Copy results</button>
+
+<table id="results"><thead><tr><th>Model</th><th>Tokens</th><th>Load s</th><th>Median s</th><th>p90 s</th><th>Runs</th></tr></thead><tbody></tbody></table>
+<div id="log"></div>
+
+<script type="module">
+import { AutoTokenizer, AutoModel, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0";
+env.allowLocalModels = false;
+// Ask for the discrete GPU (Chrome on Windows otherwise often picks the integrated one).
+try { env.backends.onnx.webgpu.powerPreference = "high-performance"; } catch {}
+
+const $ = s => document.querySelector(s);
+const log = m => { $("#log").textContent += m + "\n"; $("#log").scrollTop = 1e9; };
+const results = [];
+let envText = "";
+
+// Synthetic CV + posting; repeated as needed so every length gets real-looking text.
+const SAMPLE = `Alex Moreno — Full-Stack Engineer. Lisbon, Portugal. Open to remote roles in the EU.
+Summary: Engineer with five years building web products in TypeScript, React, Node.js and Python. Shipped LLM features (retrieval, evaluation, prompt pipelines) to production. Comfortable owning features end to end, from database schema to UI.
+Experience: Software Engineer, Brightline Analytics (2022–present). Built a customer reporting dashboard in Next.js and PostgreSQL used by 4,000 accounts. Led migration from REST to tRPC, cut API errors by 30%. Added a document Q&A feature using embeddings and a vector store; wrote the evaluation harness.
+Junior Developer, Casa Digital (2020–2022). Maintained Django and Vue apps for retail clients, wrote integration tests, set up CI on GitHub Actions. Freelance web developer (2019–2020): WordPress and Shopify sites for small businesses.
+Education: BSc Computer Science, University of Porto, 2019. Languages: Portuguese (native), English (C1), Spanish (B2).
+Skills: TypeScript, React, Next.js, Node.js, Python, FastAPI, Django, PostgreSQL, Redis, Docker, AWS (Lambda, S3, RDS), OpenAI and open-weight LLM APIs, LangChain, pgvector, Playwright, Jest.
+---
+Job posting: Senior Full-Stack Engineer (AI Products) at Northwind Labs, remote within Europe.
+About the role: You will build the core product that lets finance teams ask questions about their data in plain language. You will work across a TypeScript front end and a Python back end, ship features weekly, and own quality through tests and evaluations.
+Requirements: 5+ years of professional software engineering. Strong TypeScript and React. Production experience with Python services. Experience shipping LLM-backed features, including retrieval and evaluation. Solid SQL and data modelling. Fluent English; German is a plus. Must be based in the EU and able to overlap with CET hours.
+Nice to have: experience with financial data, dbt, Kubernetes, startup experience, mentoring junior engineers.
+`;
+
+async function gpuInfo() {
+  if (!("gpu" in navigator)) return { ok: false, text: "WebGPU: NOT available (needs Chrome 113+ over HTTPS or localhost). Would fall back to slow CPU." };
+  const a = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+  if (!a) return { ok: false, text: "WebGPU: no adapter" };
+  const i = a.info || {};
+  return { ok: true, text: `WebGPU: yes | ${i.vendor || "?"} ${i.architecture || ""} ${i.description || ""} | shader-f16: ${a.features.has("shader-f16")}` };
+}
+
+(async () => {
+  const g = await gpuInfo();
+  envText = `${g.text}\nBrowser: ${navigator.userAgent}\nCPU threads: ${navigator.hardwareConcurrency}  Memory hint: ${navigator.deviceMemory ?? "?"} GB`;
+  $("#env").innerHTML = `<span class="${g.ok ? "ok" : "bad"}">${g.text}</span>\n${envText.split("\n").slice(1).join("\n")}`;
+})();
+
+const median = xs => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
+const p90 = xs => { const s = [...xs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(s.length * 0.9))]; };
+
+function addRow(r) {
+  results.push(r);
+  const tr = document.createElement("tr");
+  tr.innerHTML = r.error
+    ? `<td>${r.model}</td><td>${r.tokens ?? ""}</td><td colspan="4" class="bad">${r.error}</td>`
+    : `<td>${r.model}</td><td>${r.tokens}</td><td>${r.load}</td><td>${r.med}</td><td>${r.p90}</td><td>${r.runs}</td>`;
+  $("#results tbody").appendChild(tr);
+}
+
+$("#run").onclick = async () => {
+  $("#run").disabled = true;
+  const models = [...document.querySelectorAll("input[name=m]:checked")].map(e => e.value.split("|"));
+  const lens = [...document.querySelectorAll("input[name=len]:checked")].map(e => +e.value);
+  const device = ("gpu" in navigator) ? "webgpu" : "wasm";
+
+  for (const [id, dtype] of models) {
+    const name = `${id.split("/")[1]} ${dtype}`;
+    let model, tok;
+    try {
+      log(`Loading ${name} on ${device}…`);
+      const t0 = performance.now();
+      tok = await AutoTokenizer.from_pretrained(id);
+      model = await AutoModel.from_pretrained(id, { device, dtype });
+      const load = ((performance.now() - t0) / 1000).toFixed(1);
+      log(`  loaded in ${load}s`);
+      const long = SAMPLE.repeat(12);
+      let first = true;
+      for (const n of lens) {
+        const inputs = tok(long, { truncation: true, max_length: n });
+        const real = inputs.input_ids.dims[1];
+        await model(inputs); await model(inputs);              // warm-up (shader compile)
+        const runs = n >= 3072 ? 6 : 10, times = [];
+        for (let i = 0; i < runs; i++) {
+          const t = performance.now();
+          await model(inputs);
+          times.push((performance.now() - t) / 1000);
+        }
+        addRow({ model: name, tokens: real, load: first ? load : "", med: median(times).toFixed(2), p90: p90(times).toFixed(2), runs });
+        log(`  ${real} tokens: median ${median(times).toFixed(2)}s`);
+        first = false;
+      }
+    } catch (e) {
+      addRow({ model: name, error: String(e.message || e).slice(0, 160) });
+      log(`  ERROR: ${e.message || e}`);
+    } finally {
+      try { await model?.dispose(); } catch {}
+    }
+  }
+  log("Done. Click 'Copy results' and paste them back.");
+  $("#run").disabled = false; $("#copy").disabled = false;
+};
+
+$("#copy").onclick = async () => {
+  const lines = [envText, "", "model | tokens | load s | median s | p90 s | runs"];
+  for (const r of results) lines.push(r.error ? `${r.model} | ERROR ${r.error}` : `${r.model} | ${r.tokens} | ${r.load} | ${r.med} | ${r.p90} | ${r.runs}`);
+  const text = lines.join("\n");
+  try { await navigator.clipboard.writeText(text); $("#copy").textContent = "Copied"; }
+  catch { log(text); }
+};
+</script>
+</body>
+</html>

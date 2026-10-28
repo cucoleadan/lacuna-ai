@@ -1,0 +1,27 @@
+ALEX MORGAN
+Lisbon, Portugal | [email] | English (native), Portuguese (professional)
+
+SUMMARY
+Full-stack engineer with 6 years building web products, the last 3 on LLM features in production. Comfortable from database to UI, happiest close to users and metrics.
+
+EXPERIENCE
+Sellwise | Senior Software Engineer
+Mar 2023 – Present | Lisbon, Portugal (Remote)
+- Built the AI reply assistant (TypeScript, Next.js, Python, OpenAI and Anthropic APIs) used by 4,000 support teams; cut median handling time 31%.
+- Designed the retrieval pipeline (Postgres + pgvector) and the evaluation harness that gates every prompt change.
+- Led a team of 3 engineers; ran the on-call rotation and incident reviews.
+
+Brightdesk | Software Engineer
+Jan 2020 – Feb 2023 | Porto, Portugal
+- Shipped the billing and self-serve onboarding flows (React, Node.js, Stripe); onboarding conversion up 18%.
+- Moved the monolith's background jobs to queues on AWS (SQS, Lambda), halving infrastructure cost.
+
+Quantica Studio | Junior Developer
+Sep 2018 – Dec 2019 | Lisbon, Portugal
+- Built marketing sites and internal tools for 20+ clients (Vue, Django).
+
+EDUCATION
+BSc Computer Science, University of Lisbon, 2015 – 2018
+
+SKILLS
+TypeScript, React, Next.js, Node.js, Python, FastAPI, PostgreSQL, pgvector, AWS, Docker, LLM APIs, RAG, evaluation, A/B testing

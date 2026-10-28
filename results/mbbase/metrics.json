@@ -1,0 +1,145 @@
+{
+ "model": "answerdotai/ModernBERT-base",
+ "args": {
+  "model": "answerdotai/ModernBERT-base",
+  "data": "<kaggle-dataset>",
+  "out": "out",
+  "max_len": 4096,
+  "epochs": 3,
+  "lr": 5e-05,
+  "tokens_per_batch": 8192,
+  "accum": 4,
+  "eval_tokens": 16384,
+  "w_line": 0.5,
+  "limit": 0,
+  "seed": 0
+ },
+ "epochs": [
+  {
+   "epoch": 1,
+   "minutes": 18.4,
+   "val": {
+    "verdict": {
+     "acc": 0.6942,
+     "macro_f1": 0.3429,
+     "ece": 0.054
+    },
+    "location": {
+     "acc": 0.4746,
+     "macro_f1": 0.4768,
+     "ece": 0.024
+    },
+    "seniority": {
+     "acc": 0.6396,
+     "macro_f1": 0.4191,
+     "ece": 0.0187
+    },
+    "must_met": {
+     "acc": 0.7259,
+     "macro_f1": 0.7196,
+     "ece": 0.0775
+    },
+    "line_met": {
+     "acc": 0.8622,
+     "macro_f1": 0.5596
+    }
+   }
+  },
+  {
+   "epoch": 2,
+   "minutes": 21.1,
+   "val": {
+    "verdict": {
+     "acc": 0.7614,
+     "macro_f1": 0.4969,
+     "ece": 0.0267
+    },
+    "location": {
+     "acc": 0.8299,
+     "macro_f1": 0.8292,
+     "ece": 0.0453
+    },
+    "seniority": {
+     "acc": 0.6865,
+     "macro_f1": 0.4661,
+     "ece": 0.0345
+    },
+    "must_met": {
+     "acc": 0.7741,
+     "macro_f1": 0.773,
+     "ece": 0.0279
+    },
+    "line_met": {
+     "acc": 0.8798,
+     "macro_f1": 0.6317
+    }
+   }
+  },
+  {
+   "epoch": 3,
+   "minutes": 21.0,
+   "val": {
+    "verdict": {
+     "acc": 0.7919,
+     "macro_f1": 0.5611,
+     "ece": 0.0377
+    },
+    "location": {
+     "acc": 0.8579,
+     "macro_f1": 0.8563,
+     "ece": 0.023
+    },
+    "seniority": {
+     "acc": 0.7056,
+     "macro_f1": 0.4798,
+     "ece": 0.0469
+    },
+    "must_met": {
+     "acc": 0.8008,
+     "macro_f1": 0.7978,
+     "ece": 0.0233
+    },
+    "line_met": {
+     "acc": 0.8806,
+     "macro_f1": 0.6311
+    }
+   }
+  }
+ ],
+ "temperatures": {
+  "verdict": 1.1111,
+  "location": 0.991,
+  "seniority": 1.2214,
+  "must_met": 1.037
+ },
+ "test": {
+  "verdict": {
+   "acc": 0.797,
+   "macro_f1": 0.55,
+   "ece": 0.0246
+  },
+  "location": {
+   "acc": 0.8261,
+   "macro_f1": 0.8191,
+   "ece": 0.0346
+  },
+  "seniority": {
+   "acc": 0.7284,
+   "macro_f1": 0.4949,
+   "ece": 0.0265
+  },
+  "must_met": {
+   "acc": 0.7703,
+   "macro_f1": 0.7631,
+   "ece": 0.0527
+  },
+  "line_met": {
+   "acc": 0.882,
+   "macro_f1": 0.6302
+  }
+ },
+ "params_m": 149.0,
+ "dataset": "v1",
+ "gpu": "Kaggle 2xT4",
+ "wall_minutes": 68
+}

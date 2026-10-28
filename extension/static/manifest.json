@@ -1,0 +1,65 @@
+{
+  "manifest_version": 3,
+  "name": "Lacuna",
+  "version": "0.1.0",
+  "description": "Mind the gap, before you apply. How a job posting fits your CV, scored on your device; your CV never leaves the browser.",
+  "minimum_chrome_version": "121",
+  "action": {
+    "default_title": "Lacuna",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  },
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "activeTab",
+    "scripting",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "https://huggingface.co/*",
+    "https://*.hf.co/*",
+    "https://*.linkedin.com/*",
+    "https://*.greenhouse.io/*",
+    "https://jobs.ashbyhq.com/*",
+    "https://jobs.lever.co/*",
+    "https://*.workable.com/*",
+    "https://*.myworkdayjobs.com/*",
+    "https://*.smartrecruiters.com/*",
+    "https://*.teamtailor.com/*",
+    "https://*.recruitee.com/*",
+    "https://*.breezy.hr/*",
+    "https://wellfound.com/*",
+    "https://ats.rippling.com/*",
+    "https://jobs.gem.com/*",
+    "https://*.getro.com/*",
+    "https://*.personio.de/*",
+    "https://*.personio.com/*",
+    "https://remoteok.com/*",
+    "https://weworkremotely.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "homepage_url": "https://huggingface.co/lacuna-ai"
+}

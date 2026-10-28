@@ -1,0 +1,262 @@
+{
+ "model": "answerdotai/ModernBERT-large",
+ "args": {
+  "model": "answerdotai/ModernBERT-large",
+  "data": "<kaggle-dataset>",
+  "out": "/kaggle/working/out",
+  "max_len": 4096,
+  "epochs": 6,
+  "lr": 3e-05,
+  "tokens_per_batch": 4096,
+  "accum": 8,
+  "eval_tokens": 16384,
+  "w_line": 0.5,
+  "limit": 0,
+  "seed": 0,
+  "optim": "adamw8bit"
+ },
+ "epochs": [
+  {
+   "epoch": 1,
+   "minutes": 60.7,
+   "val": {
+    "verdict": {
+     "acc": 0.7567,
+     "macro_f1": 0.5841,
+     "ece": 0.0214
+    },
+    "location": {
+     "acc": 0.8299,
+     "macro_f1": 0.8298,
+     "ece": 0.0198
+    },
+    "seniority": {
+     "acc": 0.6976,
+     "macro_f1": 0.5936,
+     "ece": 0.0306
+    },
+    "must_met": {
+     "acc": 0.8087,
+     "macro_f1": 0.7977,
+     "ece": 0.0384
+    },
+    "line_met": {
+     "acc": 0.8818,
+     "macro_f1": 0.6289
+    }
+   }
+  },
+  {
+   "epoch": 2,
+   "minutes": 69.9,
+   "val": {
+    "verdict": {
+     "acc": 0.7819,
+     "macro_f1": 0.624,
+     "ece": 0.0477
+    },
+    "location": {
+     "acc": 0.878,
+     "macro_f1": 0.8784,
+     "ece": 0.0432
+    },
+    "seniority": {
+     "acc": 0.7276,
+     "macro_f1": 0.6919,
+     "ece": 0.0394
+    },
+    "must_met": {
+     "acc": 0.8457,
+     "macro_f1": 0.8401,
+     "ece": 0.0334
+    },
+    "line_met": {
+     "acc": 0.8968,
+     "macro_f1": 0.6887
+    }
+   }
+  },
+  {
+   "epoch": 3,
+   "minutes": 70.0,
+   "val": {
+    "verdict": {
+     "acc": 0.7961,
+     "macro_f1": 0.6553,
+     "ece": 0.0386
+    },
+    "location": {
+     "acc": 0.8976,
+     "macro_f1": 0.8975,
+     "ece": 0.0341
+    },
+    "seniority": {
+     "acc": 0.7976,
+     "macro_f1": 0.7443,
+     "ece": 0.0295
+    },
+    "must_met": {
+     "acc": 0.8535,
+     "macro_f1": 0.8479,
+     "ece": 0.0299
+    },
+    "line_met": {
+     "acc": 0.9016,
+     "macro_f1": 0.7043
+    }
+   }
+  },
+  {
+   "epoch": 4,
+   "minutes": 70.0,
+   "val": {
+    "verdict": {
+     "acc": 0.8047,
+     "macro_f1": 0.6824,
+     "ece": 0.0717
+    },
+    "location": {
+     "acc": 0.8953,
+     "macro_f1": 0.8955,
+     "ece": 0.0415
+    },
+    "seniority": {
+     "acc": 0.7976,
+     "macro_f1": 0.7563,
+     "ece": 0.086
+    },
+    "must_met": {
+     "acc": 0.8591,
+     "macro_f1": 0.8502,
+     "ece": 0.0658
+    },
+    "line_met": {
+     "acc": 0.903,
+     "macro_f1": 0.71
+    }
+   }
+  },
+  {
+   "epoch": 5,
+   "minutes": 69.8,
+   "val": {
+    "verdict": {
+     "acc": 0.8016,
+     "macro_f1": 0.696,
+     "ece": 0.1088
+    },
+    "location": {
+     "acc": 0.8992,
+     "macro_f1": 0.8988,
+     "ece": 0.0533
+    },
+    "seniority": {
+     "acc": 0.7984,
+     "macro_f1": 0.7607,
+     "ece": 0.1165
+    },
+    "must_met": {
+     "acc": 0.8638,
+     "macro_f1": 0.8562,
+     "ece": 0.0821
+    },
+    "line_met": {
+     "acc": 0.9029,
+     "macro_f1": 0.708
+    }
+   }
+  },
+  {
+   "epoch": 6,
+   "minutes": 69.8,
+   "val": {
+    "verdict": {
+     "acc": 0.8016,
+     "macro_f1": 0.695,
+     "ece": 0.1205
+    },
+    "location": {
+     "acc": 0.8976,
+     "macro_f1": 0.8971,
+     "ece": 0.0616
+    },
+    "seniority": {
+     "acc": 0.8087,
+     "macro_f1": 0.766,
+     "ece": 0.1243
+    },
+    "must_met": {
+     "acc": 0.8693,
+     "macro_f1": 0.8626,
+     "ece": 0.0955
+    },
+    "line_met": {
+     "acc": 0.9042,
+     "macro_f1": 0.7137
+    }
+   }
+  }
+ ],
+ "temperatures": {
+  "verdict": 2.0131,
+  "location": 1.6649,
+  "seniority": 2.1048,
+  "must_met": 2.0026
+ },
+ "test": {
+  "verdict": {
+   "acc": 0.8275,
+   "macro_f1": 0.7161,
+   "ece": 0.0183
+  },
+  "location": {
+   "acc": 0.9046,
+   "macro_f1": 0.9031,
+   "ece": 0.0134
+  },
+  "seniority": {
+   "acc": 0.7886,
+   "macro_f1": 0.7313,
+   "ece": 0.0263
+  },
+  "must_met": {
+   "acc": 0.8108,
+   "macro_f1": 0.7966,
+   "ece": 0.057
+  },
+  "line_met": {
+   "acc": 0.9052,
+   "macro_f1": 0.7127
+  }
+ },
+ "params_m": 394.8,
+ "dataset": "v2",
+ "gpu": "Kaggle 2xT4",
+ "test_v1": {
+  "verdict": {
+   "acc": 0.8617,
+   "macro_f1": 0.7332,
+   "ece": 0.0313
+  },
+  "location": {
+   "acc": 0.8909,
+   "macro_f1": 0.8856,
+   "ece": 0.0238
+  },
+  "seniority": {
+   "acc": 0.8033,
+   "macro_f1": 0.683,
+   "ece": 0.0231
+  },
+  "must_met": {
+   "acc": 0.8185,
+   "macro_f1": 0.8093,
+   "ece": 0.0538
+  },
+  "line_met": {
+   "acc": 0.9035,
+   "macro_f1": 0.7076
+  },
+  "n": 788
+ }
+}

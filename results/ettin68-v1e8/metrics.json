@@ -1,0 +1,296 @@
+{
+ "model": "jhu-clsp/ettin-encoder-68m",
+ "args": {
+  "model": "jhu-clsp/ettin-encoder-68m",
+  "data": "<kaggle-dataset>",
+  "out": "out",
+  "max_len": 4096,
+  "epochs": 8,
+  "lr": 0.0001,
+  "tokens_per_batch": 8192,
+  "accum": 4,
+  "eval_tokens": 16384,
+  "w_line": 0.5,
+  "limit": 0,
+  "seed": 0
+ },
+ "epochs": [
+  {
+   "epoch": 1,
+   "minutes": 10.7,
+   "val": {
+    "verdict": {
+     "acc": 0.7208,
+     "macro_f1": 0.4363,
+     "ece": 0.0557
+    },
+    "location": {
+     "acc": 0.6891,
+     "macro_f1": 0.6888,
+     "ece": 0.0409
+    },
+    "seniority": {
+     "acc": 0.5698,
+     "macro_f1": 0.3819,
+     "ece": 0.0904
+    },
+    "must_met": {
+     "acc": 0.6218,
+     "macro_f1": 0.4698,
+     "ece": 0.1898
+    },
+    "line_met": {
+     "acc": 0.8688,
+     "macro_f1": 0.5693
+    }
+   }
+  },
+  {
+   "epoch": 2,
+   "minutes": 12.9,
+   "val": {
+    "verdict": {
+     "acc": 0.7297,
+     "macro_f1": 0.5974,
+     "ece": 0.0621
+    },
+    "location": {
+     "acc": 0.8452,
+     "macro_f1": 0.8447,
+     "ece": 0.0494
+    },
+    "seniority": {
+     "acc": 0.6853,
+     "macro_f1": 0.4528,
+     "ece": 0.0375
+    },
+    "must_met": {
+     "acc": 0.7728,
+     "macro_f1": 0.7727,
+     "ece": 0.0319
+    },
+    "line_met": {
+     "acc": 0.885,
+     "macro_f1": 0.6434
+    }
+   }
+  },
+  {
+   "epoch": 3,
+   "minutes": 12.8,
+   "val": {
+    "verdict": {
+     "acc": 0.7728,
+     "macro_f1": 0.5362,
+     "ece": 0.0704
+    },
+    "location": {
+     "acc": 0.8756,
+     "macro_f1": 0.8758,
+     "ece": 0.026
+    },
+    "seniority": {
+     "acc": 0.7157,
+     "macro_f1": 0.484,
+     "ece": 0.0648
+    },
+    "must_met": {
+     "acc": 0.835,
+     "macro_f1": 0.8314,
+     "ece": 0.0408
+    },
+    "line_met": {
+     "acc": 0.891,
+     "macro_f1": 0.6646
+    }
+   }
+  },
+  {
+   "epoch": 4,
+   "minutes": 12.8,
+   "val": {
+    "verdict": {
+     "acc": 0.783,
+     "macro_f1": 0.638,
+     "ece": 0.0735
+    },
+    "location": {
+     "acc": 0.8807,
+     "macro_f1": 0.88,
+     "ece": 0.0243
+    },
+    "seniority": {
+     "acc": 0.7297,
+     "macro_f1": 0.6142,
+     "ece": 0.0936
+    },
+    "must_met": {
+     "acc": 0.816,
+     "macro_f1": 0.8145,
+     "ece": 0.0661
+    },
+    "line_met": {
+     "acc": 0.8937,
+     "macro_f1": 0.6747
+    }
+   }
+  },
+  {
+   "epoch": 5,
+   "minutes": 12.8,
+   "val": {
+    "verdict": {
+     "acc": 0.7931,
+     "macro_f1": 0.6648,
+     "ece": 0.0826
+    },
+    "location": {
+     "acc": 0.8845,
+     "macro_f1": 0.8827,
+     "ece": 0.0671
+    },
+    "seniority": {
+     "acc": 0.7487,
+     "macro_f1": 0.612,
+     "ece": 0.1009
+    },
+    "must_met": {
+     "acc": 0.8312,
+     "macro_f1": 0.8297,
+     "ece": 0.0809
+    },
+    "line_met": {
+     "acc": 0.8926,
+     "macro_f1": 0.6729
+    }
+   }
+  },
+  {
+   "epoch": 6,
+   "minutes": 12.8,
+   "val": {
+    "verdict": {
+     "acc": 0.7855,
+     "macro_f1": 0.6449,
+     "ece": 0.1251
+    },
+    "location": {
+     "acc": 0.8997,
+     "macro_f1": 0.8979,
+     "ece": 0.0591
+    },
+    "seniority": {
+     "acc": 0.7221,
+     "macro_f1": 0.5894,
+     "ece": 0.1685
+    },
+    "must_met": {
+     "acc": 0.8477,
+     "macro_f1": 0.8417,
+     "ece": 0.1068
+    },
+    "line_met": {
+     "acc": 0.8922,
+     "macro_f1": 0.6697
+    }
+   }
+  },
+  {
+   "epoch": 7,
+   "minutes": 12.8,
+   "val": {
+    "verdict": {
+     "acc": 0.7982,
+     "macro_f1": 0.6695,
+     "ece": 0.1505
+    },
+    "location": {
+     "acc": 0.8921,
+     "macro_f1": 0.8901,
+     "ece": 0.0766
+    },
+    "seniority": {
+     "acc": 0.7373,
+     "macro_f1": 0.6024,
+     "ece": 0.1982
+    },
+    "must_met": {
+     "acc": 0.8401,
+     "macro_f1": 0.8338,
+     "ece": 0.1238
+    },
+    "line_met": {
+     "acc": 0.8908,
+     "macro_f1": 0.677
+    }
+   }
+  },
+  {
+   "epoch": 8,
+   "minutes": 12.7,
+   "val": {
+    "verdict": {
+     "acc": 0.7881,
+     "macro_f1": 0.6593,
+     "ece": 0.1611
+    },
+    "location": {
+     "acc": 0.8934,
+     "macro_f1": 0.891,
+     "ece": 0.082
+    },
+    "seniority": {
+     "acc": 0.7437,
+     "macro_f1": 0.613,
+     "ece": 0.2041
+    },
+    "must_met": {
+     "acc": 0.8439,
+     "macro_f1": 0.8393,
+     "ece": 0.1183
+    },
+    "line_met": {
+     "acc": 0.8955,
+     "macro_f1": 0.6841
+    }
+   }
+  }
+ ],
+ "temperatures": {
+  "verdict": 3.5414,
+  "location": 2.4691,
+  "seniority": 3.436,
+  "must_met": 3.5012
+ },
+ "test": {
+  "verdict": {
+   "acc": 0.802,
+   "macro_f1": 0.6256,
+   "ece": 0.0257
+  },
+  "location": {
+   "acc": 0.8832,
+   "macro_f1": 0.8745,
+   "ece": 0.0212
+  },
+  "seniority": {
+   "acc": 0.7348,
+   "macro_f1": 0.5755,
+   "ece": 0.0249
+  },
+  "must_met": {
+   "acc": 0.7919,
+   "macro_f1": 0.7782,
+   "ece": 0.0532
+  },
+  "line_met": {
+   "acc": 0.8936,
+   "macro_f1": 0.6814
+  }
+ },
+ "params_m": 68.2,
+ "dataset": "v1",
+ "gpu": "Kaggle 2xT4",
+ "wall_minutes": 105,
+ "note": "launched as 'ettin68-v2e8' but Kaggle served the previous dataset version (v1: 6,315 train examples)"
+}
