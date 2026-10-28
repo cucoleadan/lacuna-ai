@@ -1,24 +1,23 @@
 // Chrome Web Store images from the raw captures (store/screens.mjs) and the logo:
 // five 1280x800 screenshots, the 440x280 and 1400x560 promo tiles, the 128x128 store icon.
-//   node store/compose.mjs <logo.png> <out dir>
-import { mkdirSync, readFileSync } from "node:fs";
+//   node store/compose.mjs <brand dir> <out dir>    (brand dir: lockup-light-text.png, mark.png, store-icon-128.png)
+import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
 import { chromium } from "playwright";
 
 const root = new URL("../../", import.meta.url).pathname;
 const raw = root + "export/store-raw/";
-const [logo, out] = process.argv.slice(2);
+const [brand, out] = process.argv.slice(2);
 mkdirSync(out, { recursive: true });
 const uri = (p) => `data:image/png;base64,${readFileSync(p).toString("base64")}`;
-const logoUri = uri(logo);
+const lockup = uri(brand + "/lockup-light-text.png"), mark = uri(brand + "/mark.png");
 
 const css = `
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#eef1ff;
 background:radial-gradient(1100px 700px at 85% 15%,#1b1f5e 0%,#070a24 55%,#04061a 100%);overflow:hidden}
 .cap{position:absolute;left:60px;top:96px;width:360px}
-.cap .brand{display:flex;align-items:center;gap:12px;font-weight:600;letter-spacing:.02em;color:#a9b4ff;font-size:18px;margin-bottom:28px}
-.cap .brand img{width:44px;height:44px;border-radius:10px}
+.cap .brand{margin-bottom:34px}.cap .brand img{height:46px;display:block}
 .cap h1{font-size:42px;line-height:1.1;margin:0 0 18px;font-weight:750;letter-spacing:-.01em}
-.cap h1 em{font-style:normal;background:linear-gradient(90deg,#3fe6ff,#a46bff);-webkit-background-clip:text;color:transparent}
+.cap h1 em{font-style:normal;background:linear-gradient(90deg,#2f7bff,#a43bff);-webkit-background-clip:text;color:transparent}
 .cap p{font-size:20px;line-height:1.45;color:#c4cae8;margin:0}
 .win{position:absolute;right:52px;top:96px;width:770px;height:608px;border-radius:14px;overflow:hidden;background:#fff;
 box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}
@@ -31,7 +30,7 @@ box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}
 .side{width:330px;border-left:1px solid #d9dce3;overflow:hidden;background:#fff}.side img{width:330px;display:block}
 `;
 const shot = (job, panel, h1, p) => `<style>${css}</style>
-<div class="cap"><div class="brand"><img src="${logoUri}">Lacuna</div><h1>${h1}</h1><p>${p}</p></div>
+<div class="cap"><div class="brand"><img src="${lockup}"></div><h1>${h1}</h1><p>${p}</p></div>
 <div class="win"><div class="bar"><i></i><i></i><i></i><div class="url"></div></div>
 <div class="body"><div class="page"><img src="${uri(raw + "job-" + job + ".png")}"></div>
 <div class="side"><img src="${uri(raw + "panel-" + panel + ".png")}"></div></div></div>`;
@@ -45,13 +44,13 @@ const SHOTS = [
 ];
 
 const promo = (w, h, big) => `<style>${css}
-.t{position:absolute;inset:0;display:flex;align-items:center;gap:${big ? 48 : 22}px;padding:0 ${big ? 110 : 34}px}
-.t img{width:${big ? 300 : 150}px;height:${big ? 300 : 150}px;border-radius:${big ? 40 : 22}px}
-.t h1{font-size:${big ? 92 : 44}px;margin:0;font-weight:780;letter-spacing:-.01em}
-.t p{font-size:${big ? 34 : 17}px;margin:${big ? 14 : 8}px 0 0;color:#c4cae8}
-.t em{font-style:normal;background:linear-gradient(90deg,#3fe6ff,#a46bff);-webkit-background-clip:text;color:transparent}
-</style><div class="t"><img src="${logoUri}"><div><h1>Lacuna</h1><p>Mind the gap, <em>before you apply.</em></p>
-${big ? '<p style="font-size:24px;color:#8f98c8;margin-top:22px">Job fit scored on your device. Your CV never leaves the browser.</p>' : ""}</div></div>`;
+.t{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 ${big ? 120 : 34}px}
+.t img{height:${big ? 150 : 64}px;align-self:flex-start}
+.t p{font-size:${big ? 40 : 19}px;margin:${big ? 30 : 14}px 0 0;color:#dfe3ff;font-weight:650}
+.t em{font-style:normal;background:linear-gradient(90deg,#2f7bff,#a43bff);-webkit-background-clip:text;color:transparent}
+.t small{display:block;font-size:24px;color:#8f98c8;margin-top:16px;font-weight:400}
+</style><div class="t"><img src="${lockup}"><p>Mind the gap, <em>before you apply.</em>
+${big ? "<small>Job fit for your CV, scored on your device. Your CV never leaves the browser.</small>" : ""}</p></div>`;
 
 const b = await chromium.launch({ channel: "chromium" });
 const render = async (html, w, h, path) => {
@@ -64,6 +63,5 @@ for (const [i, s] of SHOTS.entries()) await render(shot(...s), 1280, 800, `${out
 await render(promo(440, 280, false), 440, 280, `${out}/promo-small-440x280.png`);
 await render(promo(1400, 560, true), 1400, 560, `${out}/promo-marquee-1400x560.png`);
 // store icon: 96x96 artwork inside a 128x128 transparent square, as the store guidelines ask
-await render(`<body style="margin:0;background:transparent"><img src="${logoUri}" style="width:96px;height:96px;margin:16px;border-radius:18px;display:block"></body>`,
-  128, 128, `${out}/store-icon-128.png`);
+copyFileSync(brand + "/store-icon-128.png", `${out}/store-icon-128.png`);  // 96 px artwork in a 128 px square
 await b.close();
