@@ -1,5 +1,5 @@
 // Injected into the job page (chrome.scripting.executeScript, files): returns {url, title, company, location, workplace,
-// text}, with text in the training layout: "Title: …\nCompany: …\nLocation: …\nWorkplace: …\n\n" + the posting as markdown.
+// text, chars, job}, with text in the training layout: "Title: …\nCompany: …\nLocation: …\nWorkplace: …\n\n" + the posting as markdown.
 // Self-contained: no imports. The last expression is the result.
 (() => {
   const clean = (s) => (s || "").replace(/\s+/g, " ").trim();
@@ -28,6 +28,8 @@
            "#content", "[class*='descriptionText']", ".posting-page .section-wrapper",
            "[data-automation-id='jobPostingDescription']", "[class*='job-description']", "[id*='job-description']", "[class*='jobDescription']"],
   };
+  // why this looks like a job posting ("" = it doesn't): gates automatic scoring
+  let job = ld ? "job posting data" : "";
   let body = null;
   if (ld?.description) {
     const d = new DOMParser().parseFromString(ld.description, "text/html");
@@ -39,7 +41,7 @@
     if (!body || clean(body.innerText).length < 300) {  // largest plausible block
       body = [...document.querySelectorAll("main, article, section, div")].filter((e) => { const n = clean(e.innerText).length; return n > 500 && n < 40000; })
         .sort((a, b) => clean(b.innerText).length - clean(a.innerText).length)[0] || document.body;
-    }
+    } else if (!body.matches("#content")) job ||= "job page layout";
   }
 
   // HTML -> markdown like the training postings: ## headings, **bold**, "- " bullets, blank lines between blocks
@@ -63,6 +65,8 @@
   };
   const text = md(body).split("\n").map((l) => l.replace(/[ \t]+/g, " ").replace(/^ (?=\S)/, "").replace(/\s+$/, "")
     .replace(/\*\* +/g, "** ").replace(/^(\s*- ) +/, "$1")).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  const SECTION = /responsibilit|requirement|qualification|what you('|’)ll (do|bring)|about the (role|job|position)|who you are|must[- ]haves?|nice[- ]to[- ]haves?|benefits|what we offer|looking for/i;
+  if (!job && text.split("\n").filter((l) => /^(#|\*\*)/.test(l) && SECTION.test(l)).length >= 2) job = "job-style sections";
 
   const title = clean(ld?.title) || clean(q(SITE.title)?.innerText) || clean(document.title);
   const company = clean(ld?.hiringOrganization?.name || (typeof ld?.hiringOrganization === "string" ? ld.hiringOrganization : "")) || clean(q(SITE.company)?.innerText);
@@ -72,5 +76,5 @@
   const header = [["Title", title], ["Company", company], ["Location", location], ["Workplace", workplace]]
     .filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join("\n");
   return { url: document.location.href, title, company, location, workplace,
-           text: header + "\n\n" + text, chars: text.length };
+           text: header + "\n\n" + text, chars: text.length, job };
 })();

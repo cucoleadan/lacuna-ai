@@ -132,6 +132,21 @@ input[type="text"] { height: 38px; padding: 0 12px; border-radius: 10px; }
 .bar div { height: 100%; width: 0; border-radius: inherit; background: var(--fg); transition: width .3s; }
 
 /* ---------- this job ---------- */
+.site { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.site .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--line-2); }
+.site .dot.auto { background: var(--good); }
+.site .dot.job { background: var(--warn); }
+.site .dot.noaccess { background: var(--bad); }
+.site strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.siteList { list-style: none; margin: 0; padding: 4px 0; max-height: 260px; overflow-y: auto; }
+.siteList li { display: flex; align-items: center; gap: 8px; padding: 0 6px 0 14px; }
+.siteList .iconBtn { width: 32px; height: 32px; border: 0; background: none; color: var(--faint); }
+.siteList .iconBtn:hover { color: var(--bad); }
+#siteEmpty { padding: 12px 14px 4px; }
+.addSite { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--line); }
+.addSite button { flex: none; }
+#siteNote:empty { display: none; }
+.siteAuto { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
 .status { padding: 10px 12px; border-radius: 10px; background: var(--surface); font-size: 13px; }
 .status.error { background: var(--bad-bg); color: var(--bad); }
 .ready { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 24px; }
@@ -216,6 +231,11 @@ input[type="text"] { height: 38px; padding: 0 12px; border-radius: 10px; }
 .rank { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .rank a { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface);
           color: inherit; text-decoration: none; }
+.rank li { position: relative; }
+.rank a { padding-right: 40px; }
+.rank .del { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; border: 0; background: none; color: var(--faint); opacity: .5; }
+.rank li:hover .del, .rank .del:focus-visible { opacity: 1; }
+.rank .del:hover { color: var(--bad); }
 .rank a:hover { border-color: var(--line-2); background: var(--surface-2); }
 .rank .score { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex: none; border-radius: 12px;
                font-size: 17px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }

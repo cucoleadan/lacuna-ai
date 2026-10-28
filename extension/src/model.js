@@ -55,11 +55,18 @@ export async function isCached(repo, file) {
 export async function clearCache() { await caches.delete(CACHE); }
 
 let loaded = null;  // {key, session, tok, cfg, device}
+const tokenizers = {};  // repo -> Promise<{tok, cfg}>: the small files only, so the CV's token count needs no model
+
+export function tokenizer(repo) {
+  return tokenizers[repo] ||= Promise.all(FILES.map(async (f) => JSON.parse(new TextDecoder().decode(await fetchCached(url(repo, f))))))
+    .then(([cfg, tj, tc]) => ({ cfg, tok: new Tokenizer(tj, tc) }))
+    .catch((e) => { delete tokenizers[repo]; throw e; });
+}
 
 export async function load(repo, file, onProgress) {
   const key = repo + file;
   if (loaded?.key === key) return loaded;
-  const [cfg, tj, tc] = await Promise.all(FILES.map(async (f) => JSON.parse(new TextDecoder().decode(await fetchCached(url(repo, f))))));
+  const { cfg, tok } = await tokenizer(repo);
   const bytes = await fetchCached(url(repo, file), (got, total) => onProgress?.({ got, total }));
   onProgress?.({ phase: "starting" });
   let session, device = "webgpu";
@@ -71,7 +78,7 @@ export async function load(repo, file, onProgress) {
     device = "wasm";
     session = await ort.InferenceSession.create(bytes, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   }
-  loaded = { key, session, tok: new Tokenizer(tj, tc), cfg, device };
+  loaded = { key, session, tok, cfg, device };
   return loaded;
 }
 

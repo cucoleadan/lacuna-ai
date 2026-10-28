@@ -1,5 +1,5 @@
 import { encodePair, htmlToText, interpret, normalizeCv } from "./core.js";
-import { TIERS, clearCache, importFolder, isCached, load, run } from "./model.js";
+import { TIERS, clearCache, importFolder, isCached, load, run, tokenizer } from "./model.js";
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
@@ -7,7 +7,7 @@ const store = {
   get: (k) => chrome.storage.local.get(k).then((r) => r[k]),
   set: (k, v) => chrome.storage.local.set({ [k]: v }),
 };
-const DEFAULTS = { tier: "celer", repos: {}, acceptUsRemote: false, autoScore: true };
+const DEFAULTS = { tier: "celer", repos: {}, acceptUsRemote: false, autoScore: true, sites: null };
 let settings = { ...DEFAULTS };
 const ICON = {
   check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
@@ -28,6 +28,7 @@ function show(view) {
   if (view === "ranked") renderRanked();
   if (view === "settings") renderSettings();
   if (view === "setupModel") renderTiers();
+  if (view === "page") checkTab();
   scrollTo(0, 0);
 }
 document.querySelectorAll("[data-tab],[data-goto]").forEach((b) => b.addEventListener("click", () => show(b.dataset.tab || b.dataset.goto)));
@@ -48,8 +49,31 @@ function phase(p) {
 }
 
 // ---------- scoring ----------
+// the job sites Lacuna runs on by itself (subdomains included): the built-in ones (manifest host permissions minus the
+// model hosts) until the user edits the list; settings.sites stays null till then, so new built-in sites reach them
+const BUILT_IN = chrome.runtime.getManifest().host_permissions.filter((p) => !/huggingface|hf\.co/.test(p)).map((p) => new URL(p.replace("*.", "")).hostname);
+const jobSites = () => settings.sites || BUILT_IN;
+const listed = (host) => jobSites().find((d) => host === d || host.endsWith("." + d));
+// "https://Jobs.Example.com/careers" -> "jobs.example.com"; "" if it isn't a domain
+function domain(v) {
+  try { const h = new URL(/^\w+:\/\//.test(v) ? v : `https://${v.trim()}`).hostname.replace(/^www\./, ""); return h.includes(".") ? h : ""; }
+  catch { return ""; }
+}
+
+// call straight from a click: Chrome only shows the permission prompt for a user gesture
+async function addSite(d) {
+  if (!BUILT_IN.includes(d) && !(await chrome.permissions.request({ origins: [`https://*.${d}/*`] }).catch(() => false))) return false;
+  settings.sites = [...new Set([...jobSites(), d])];
+  await saveSettings();
+  return true;
+}
+async function removeSite(d) {
+  settings.sites = jobSites().filter((x) => x !== d);
+  await saveSettings();
+  if (!BUILT_IN.includes(d)) chrome.permissions.remove({ origins: [`https://*.${d}/*`] }).catch(() => {});
+}
 const repoFor = (tier) => settings.repos[tier] || TIERS[tier].repo;
-let busy = false, scored = false;
+let busy = false, scored = false, shownUrl = "";
 
 async function activeTab() {
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
@@ -75,7 +99,7 @@ function progress(i, note = "", pct = [12, 40, 85][i]) {
 const initial = (page) => (page.company || page.title || "?").trim().charAt(0).toUpperCase();
 const meta = (page) => [page.company, page.location].filter(Boolean).join(" · ");
 
-async function score() {
+async function score(given) {
   if (busy) return;
   const cv = await store.get("cv");
   if (!cv) return show("welcome");
@@ -84,14 +108,16 @@ async function score() {
   $("permNote").hidden = true;
   status("");
   try {
-    const tab = await activeTab();
-    // tab.url is hidden on sites Lacuna has no access to; try anyway (activeTab may cover it)
-    if (!tab || (tab.url && !tab.url.startsWith("http"))) { status("Open a job posting, then score it."); return; }
-    let page;
-    try { page = await readPage(tab); } catch (e) {
-      status("Lacuna can't read this page yet.", true);
-      $("permNote").hidden = false;
-      return;
+    let page = given;
+    if (!page) {
+      const tab = await activeTab();
+      // tab.url is hidden on sites Lacuna has no access to; try anyway (activeTab may cover it)
+      if (!tab || (tab.url && !tab.url.startsWith("http"))) { status("Open a job posting, then score it."); return; }
+      try { page = await readPage(tab); } catch (e) {
+        status("Lacuna can't read this page yet.", true);
+        $("permNote").hidden = false;
+        return;
+      }
     }
     if (!page || page.chars < 200) { status("No job posting found on this page."); return; }
     $("progInitial").textContent = initial(page);
@@ -113,6 +139,7 @@ async function score() {
     const r = interpret(out, enc, page.text, m.cfg, settings);
     const s = (performance.now() - t0) / 1000;
     render(page, r, `${enc.inputIds.length.toLocaleString()} tokens · ${s.toFixed(1)} s · ${m.device === "webgpu" ? "GPU" : "CPU"} · ${TIERS[tier].label}`);
+    if (!page.job) status("This page doesn't look like a job posting, so the score may not mean much.");
     await remember(page, r, tier);
   } catch (e) {
     console.error(e);
@@ -148,6 +175,7 @@ function list(id, items, icon) {
 
 function render(page, r, timing) {
   scored = true;
+  shownUrl = page.url.split("#")[0];
   phase("result");
   $("jobInitial").textContent = initial(page);
   $("jobTitle").textContent = page.title || "Job posting";
@@ -204,7 +232,10 @@ async function renderRanked() {
     b.addEventListener("click", () => { filter = id; renderRanked(); });
     return b;
   }));
+  $("clearHist").textContent = filter === "all" ? "Clear all" : `Clear ${VERDICT[filter][0]}`;
   $("rankList").replaceChildren(...hist.filter((h) => filter === "all" || h.verdict === filter).map((h) => el("li", {},
+    el("button", { className: "iconBtn del", type: "button", title: "Remove", ariaLabel: `Remove ${h.title || h.url}`, innerHTML: ICON.x,
+                   onclick: () => dropJobs((x) => x.url === h.url) }),
     el("a", { href: h.url, target: "_blank" },
       el("span", { className: `score v-${h.verdict}`, textContent: Math.round(h.fit * 100) }),
       el("span", { className: "body" },
@@ -214,7 +245,11 @@ async function renderRanked() {
           el("span", { className: `tag v-${h.verdict}`, textContent: VERDICT[h.verdict]?.[0] || h.verdict }),
           note(h)))))));
 }
-$("clearHist").addEventListener("click", async () => { await store.set("history", []); renderRanked(); });
+async function dropJobs(gone) {
+  await store.set("history", ((await store.get("history")) || []).filter((h) => !gone(h)));
+  renderRanked();
+}
+$("clearHist").addEventListener("click", () => dropJobs((h) => filter === "all" || h.verdict === filter));
 
 // ---------- model choice (setup and settings) ----------
 async function renderTiers() {
@@ -309,13 +344,41 @@ async function renderSettings() {
   const cv = await store.get("cv");
   $("cvStatus").textContent = cv ? "CV saved" : "No CV saved";
   $("cvInfo").textContent = cv ? `${cv.length.toLocaleString()} characters · in this browser only` : "Add one to start scoring.";
+  // the CV and the posting share the model's token budget; past it, the end of the longer one is cut
+  if (cv) tokenizer(repoFor(settings.tier)).then(({ tok, cfg }) => {
+    const n = tok.encode(cv, { add_special_tokens: false }).ids.length;
+    $("cvInfo").textContent = `${cv.length.toLocaleString()} characters · ${n.toLocaleString()} of ${cfg.max_len.toLocaleString()} tokens · in this browser only`;
+  }).catch(() => {});
   $("editCv").textContent = cv ? "Replace" : "Add CV";
   $("deleteCv").disabled = !cv;
-  const all = await chrome.permissions.contains({ origins: ["https://*/*"] });
-  $("allowAll").disabled = all;
-  $("allowAll").textContent = all ? "Allowed" : "Allow all";
+  renderSites();
   renderTiers();
 }
+
+function renderSites() {
+  $("siteList").replaceChildren(...jobSites().map((d) => el("li", {}, el("span", { className: "mono grow", textContent: d }),
+    el("button", { type: "button", className: "iconBtn", title: "Remove", ariaLabel: `Remove ${d}`, innerHTML: ICON.x,
+                   onclick: async () => { await removeSite(d); renderSites(); } }))));
+  $("siteEmpty").hidden = !!jobSites().length;
+  $("resetSites").hidden = !settings.sites;
+}
+$("addSite").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const d = domain($("newSite").value);
+  if (!d) { $("siteNote").textContent = "Type a domain, like jobs.example.com."; return; }
+  if (listed(d) === d) { $("siteNote").textContent = `${d} is already on the list.`; return; }
+  const ok = await addSite(d);
+  $("siteNote").textContent = ok ? `Added ${d}.` : `Chrome didn't allow ${d}, so it wasn't added.`;
+  if (ok) $("newSite").value = "";
+  renderSites();
+});
+$("resetSites").addEventListener("click", async () => {
+  for (const d of jobSites()) if (!BUILT_IN.includes(d)) chrome.permissions.remove({ origins: [`https://*.${d}/*`] }).catch(() => {});
+  settings.sites = null;
+  await saveSettings();
+  $("siteNote").textContent = "Back to the built-in list.";
+  renderSites();
+});
 
 $("repo").addEventListener("change", async () => {
   const v = $("repo").value.trim();
@@ -335,21 +398,55 @@ $("clearModels").addEventListener("click", async () => { await clearCache(); $("
 $("usRemote").addEventListener("change", async (e) => { settings.acceptUsRemote = e.target.checked; await saveSettings(); });
 $("autoScore").addEventListener("change", async (e) => { settings.autoScore = e.target.checked; await saveSettings(); });
 
-$("scoreBtn").addEventListener("click", score);
-$("rescoreBtn").addEventListener("click", score);
+// "Run on this page": ask for this one site first (no prompt if Lacuna already has it), then score
+$("scoreBtn").addEventListener("click", async () => {
+  if (siteOrigin) await chrome.permissions.request({ origins: [siteOrigin] }).catch(() => false);
+  score();
+});
+$("rescoreBtn").addEventListener("click", () => score());
 document.querySelectorAll("[data-allow]").forEach((b) => b.addEventListener("click", async () => {
   if (!(await chrome.permissions.request({ origins: ["https://*/*"] }))) return;
   if (current === "settings") renderSettings(); else score();
 }));
 
-// re-score when the user lands on another page (only where Lacuna may read it)
-async function maybeAuto() {
-  if (!settings.autoScore || busy || current !== "page" || !(await store.get("cv"))) return;
-  const tab = await activeTab();
-  if (tab?.url?.startsWith("http") && (await chrome.permissions.contains({ origins: [new URL(tab.url).origin + "/*"] }))) score();
+// ---------- this site: what Lacuna sees on the active tab, and whether it scores it on its own ----------
+let siteOrigin = "", siteEntry = "";  // the tab's origin pattern; the list entry that covers it ("" = none)
+function site(host, line, state, auto) {
+  $("siteHost").textContent = host;
+  $("siteLine").textContent = line;
+  $("siteDot").className = `dot ${state}`;
+  $("siteAutoBox").hidden = auto === undefined;
+  $("siteAuto").checked = !!auto;
 }
-chrome.tabs.onActivated.addListener(maybeAuto);
-chrome.tabs.onUpdated.addListener((id, info, tab) => { if (info.status === "complete" && tab.active) maybeAuto(); });
+
+// runs on every tab change: reads the page (locally, no model) and scores it only if it looks like a job posting
+async function checkTab() {
+  if (current !== "page" || busy) return;
+  const tab = await activeTab(), url = tab?.url;
+  if (scored && url?.split("#")[0] !== shownUrl) { scored = false; phase("ready"); status(""); }
+  siteOrigin = url?.startsWith("https:") ? new URL(url).origin + "/*" : "";
+  if (!url) return site("This site", "Not on your job-site list. Lacuna runs here only when you ask.", "");
+  if (!url.startsWith("http")) return site("No web page", "Open a job posting to score it.", "");
+  const hostname = new URL(url).hostname, host = hostname.replace(/^www\./, "");
+  siteEntry = listed(hostname) || "";
+  $("siteAutoBox").title = siteEntry ? `Lacuna runs by itself on ${siteEntry}. Turn off to take it off your job-site list.` : `Add ${host} to your job-site list`;
+  if (!siteEntry) return site(host, "Not on your job-site list. Lacuna runs here only when you ask.", "", false);
+  if (!(await chrome.permissions.contains({ origins: [new URL(url).origin + "/*"] })))
+    return site(host, "On your list, but Chrome hasn't allowed it. Turn Auto off and on to allow it.", "noaccess", false);
+  let page;
+  try { page = await readPage(tab); } catch { return site(host, "Lacuna can't read this page.", "noaccess", true); }
+  if (!page?.job) return site(host, page?.chars < 200 ? "Almost no text on this page. Nothing to score." : "Doesn't look like a job posting, so Lacuna didn't run.", "", true);
+  if (!settings.autoScore) return site(host, `Job posting found (${page.job}). Auto-scoring is off in Settings.`, "job", true);
+  site(host, `Job posting found (${page.job}). Ran automatically.`, "auto", true);
+  if (!(scored && page.url.split("#")[0] === shownUrl)) score(page);
+}
+$("siteAuto").addEventListener("change", async (e) => {
+  if (!e.target.checked) await removeSite(siteEntry);
+  else if (!(await addSite(siteEntry || $("siteHost").textContent))) e.target.checked = false;
+  checkTab();
+});
+chrome.tabs.onActivated.addListener(checkTab);
+chrome.tabs.onUpdated.addListener((id, info, tab) => { if (info.status === "complete" && tab.active) checkTab(); });
 
 // ---------- start ----------
 (async () => {
@@ -369,5 +466,4 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => { if (info.status === "comp
   if (!cv) return show("welcome");
   show("page");
   phase("ready");
-  maybeAuto();
 })();

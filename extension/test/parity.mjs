@@ -1,11 +1,12 @@
 // JS core vs the Python pipeline on the fixtures from test/make_fixtures.py (data/parity/, gitignored).
 //   node test/parity.mjs
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { Tokenizer } from "@huggingface/tokenizers";
 import * as ort from "onnxruntime-node";
 import { encodePair, interpret, normalizeCv } from "../src/core.js";
 
-const root = new URL("../../", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../../", import.meta.url));
 const exp = root + "export/lacuna-celer/";
 const read = (p) => JSON.parse(readFileSync(p, "utf8"));
 const tok = new Tokenizer(read(exp + "tokenizer.json"), read(exp + "tokenizer_config.json"));

@@ -89,6 +89,11 @@
 
   <!-- ---------- this job ---------- -->
   <section id="page" class="view" hidden>
+    <div id="site" class="card site">
+      <span id="siteDot" class="dot"></span>
+      <span class="grow"><strong id="siteHost" class="mono"></strong><small id="siteLine"></small></span>
+      <label id="siteAutoBox" class="siteAuto" title="Score job postings on this site as they load">Auto<input type="checkbox" role="switch" id="siteAuto"></label>
+    </div>
     <div id="status" class="status" hidden></div>
     <p id="permNote" class="note" hidden>This site is not on the built-in list.
       <button class="link" data-allow>Allow Lacuna to read job pages on any site</button>, or click the Lacuna icon on the page first.</p>
@@ -96,13 +101,13 @@
     <div id="ready" class="ready">
       <span class="markTile"><img src="brand/mark.svg" alt="" width="31" height="34"></span>
       <h1>You're all set</h1>
-      <p class="lede">Open a job posting and press Score. On supported sites Lacuna scores it as the page loads.</p>
+      <p class="lede">Open a job posting. On the sites below Lacuna runs as the page loads; anywhere else, press Run on this page.</p>
       <div class="card sites">
         <h2>Works out of the box on</h2>
         <ul class="tags">
           <li>LinkedIn</li><li>Greenhouse</li><li>Lever</li><li>Ashby</li><li>Workday</li><li>Workable</li><li>SmartRecruiters</li><li>Wellfound</li><li class="more">+9 more</li>
         </ul>
-        <p class="faint small">On another site? Press Score this page and allow it once.</p>
+        <p class="faint small">On another site? Press Run on this page.</p>
       </div>
     </div>
 
@@ -144,7 +149,7 @@
     </div>
 
     <div class="foot pagefoot">
-      <button id="scoreBtn" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Score this page</button>
+      <button id="scoreBtn" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Run on this page</button>
     </div>
   </section>
 
@@ -184,18 +189,23 @@
     <section class="group">
       <h2>Scoring</h2>
       <div class="card">
-        <label class="switchRow"><span class="grow"><strong>Score automatically</strong><small>When you open a job page on a supported site.</small></span><input type="checkbox" role="switch" id="autoScore"></label>
+        <label class="switchRow"><span class="grow"><strong>Score automatically</strong><small>On the job sites below, when the page is a job posting. The Auto switch on any page adds or removes its site.</small></span><input type="checkbox" role="switch" id="autoScore"></label>
         <label class="switchRow"><span class="grow"><strong>Count US-only remote as open</strong><small>For contractors outside the US. Shows "US-remote" instead of "Not eligible".</small></span><input type="checkbox" role="switch" id="usRemote"></label>
       </div>
     </section>
 
     <section class="group">
-      <h2>Sites</h2>
-      <div class="card row">
-        <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
-        <span class="grow"><strong>17 job sites built in</strong><small class="faint">LinkedIn, Greenhouse, Lever, Ashby and more</small></span>
-        <button class="secondary small" id="allowAll" data-allow>Allow all</button>
+      <h2>Job sites <span>Lacuna runs here by itself, subdomains too</span></h2>
+      <div class="card sitesCard">
+        <ul id="siteList" class="siteList"></ul>
+        <p id="siteEmpty" class="faint small" hidden>No sites. Lacuna runs only when you press Run on this page.</p>
+        <form id="addSite" class="addSite">
+          <input id="newSite" type="text" placeholder="jobs.example.com" aria-label="Add a job site" spellcheck="false" autocomplete="off">
+          <button class="secondary small">Add</button>
+        </form>
       </div>
+      <p id="siteNote" class="faint small" aria-live="polite"></p>
+      <button id="resetSites" class="link small" type="button" hidden>Reset to the built-in list</button>
     </section>
 
     <details class="card advanced">

@@ -3,9 +3,10 @@
 // FROM_HUB=1 downloads the published model from Hugging Face instead. Serves export/lacuna-celer/ as the model and a job page built from a validation pair (data/parity/, private).
 import { cpSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
-const root = new URL("../../", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../../", import.meta.url));
 const pair = JSON.parse(readFileSync(root + "data/parity/pairs.json", "utf8"))[0];
 const [head, ...rest] = pair.job.split("\n\n");
 const field = (k) => (head.match(new RegExp(`^${k}: (.*)$`, "m")) || [])[1] || "";
