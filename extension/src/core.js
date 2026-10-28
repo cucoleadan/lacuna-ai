@@ -198,3 +198,18 @@ export function interpret(out, enc, job, cfg, settings = {}) {
     truncated: enc.truncated, probs: p,
   };
 }
+
+/** One key per job, so a posting is scored once: drops the #fragment, tracking parameters and an ATS's apply step
+ *  (Ashby /application, Lever and Workable /apply, Workday /apply/applyManually), and maps LinkedIn's many job URLs
+ *  (search, collections, /jobs/view/title-123) to /jobs/view/<id>/. The key is still a link to the posting. */
+export function jobKey(href) {
+  const u = new URL(href);
+  u.hash = "";
+  for (const k of [...u.searchParams.keys()]) {
+    if (/^(utm_.*|ref|refid|trk|trackingid|source|src|gh_src|lever-source|lever-origin)$/i.test(k)) u.searchParams.delete(k);
+  }
+  const li = u.hostname.endsWith("linkedin.com") && (u.searchParams.get("currentJobId") || u.pathname.match(/\/jobs\/view\/(?:[^/]*-)?(\d+)/)?.[1]);
+  if (li) return `https://www.linkedin.com/jobs/view/${li}/`;
+  u.pathname = u.pathname.replace(/\/(apply|application)(\/[^/]*)?\/?$/i, "").replace(/\/+$/, "") || "/";
+  return u.href;
+}

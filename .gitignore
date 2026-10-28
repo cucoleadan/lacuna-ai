@@ -18,6 +18,7 @@ __pycache__/
 # private settings: endpoint, accounts, local paths
 local.json
 *.private.md
+AGENTS.md
 
 # private: check against the author's own job-search verdicts
 scripts/labeller_check.py

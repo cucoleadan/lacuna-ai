@@ -1,4 +1,4 @@
-import { encodePair, htmlToText, interpret, normalizeCv } from "./core.js";
+import { encodePair, htmlToText, interpret, jobKey, normalizeCv } from "./core.js";
 import { TIERS, clearCache, importFolder, isCached, load, run, tokenizer } from "./model.js";
 
 const $ = (id) => document.getElementById(id);
@@ -73,7 +73,7 @@ async function removeSite(d) {
   if (!BUILT_IN.includes(d)) chrome.permissions.remove({ origins: [`https://*.${d}/*`] }).catch(() => {});
 }
 const repoFor = (tier) => settings.repos[tier] || TIERS[tier].repo;
-let busy = false, scored = false, shownUrl = "";
+let busy = false, scored = false, shownUrl = "";  // shownUrl: jobKey of the result on screen
 
 async function activeTab() {
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
@@ -175,7 +175,7 @@ function list(id, items, icon) {
 
 function render(page, r, timing) {
   scored = true;
-  shownUrl = page.url.split("#")[0];
+  shownUrl = jobKey(page.url);
   phase("result");
   $("jobInitial").textContent = initial(page);
   $("jobTitle").textContent = page.title || "Job posting";
@@ -202,9 +202,9 @@ function render(page, r, timing) {
 
 async function remember(page, r, tier) {
   const hist = (await store.get("history")) || [];
-  const row = { url: page.url.split("#")[0], title: page.title, company: page.company, location: page.location, fit: r.fit,
+  const row = { url: jobKey(page.url), title: page.title, company: page.company, location: page.location, fit: r.fit,
                 verdict: r.verdict, loc: r.location, sen: r.seniority, nGaps: r.gaps.length, gaps: r.gaps.map((g) => g.text).slice(0, 5), tier, at: Date.now() };
-  const next = [row, ...hist.filter((h) => h.url !== row.url)].slice(0, 2000);
+  const next = [row, ...hist.filter((h) => jobKey(h.url) !== row.url)].slice(0, 2000);  // rows saved before jobKey keep raw URLs
   await store.set("history", next);
   $("savedCount").textContent = next.length;
 }
@@ -423,7 +423,8 @@ function site(host, line, state, auto) {
 async function checkTab() {
   if (current !== "page" || busy) return;
   const tab = await activeTab(), url = tab?.url;
-  if (scored && url?.split("#")[0] !== shownUrl) { scored = false; phase("ready"); status(""); }
+  const key = url?.startsWith("http") ? jobKey(url) : "";
+  if (scored && key !== shownUrl) { scored = false; phase("ready"); status(""); }
   siteOrigin = url?.startsWith("https:") ? new URL(url).origin + "/*" : "";
   if (!url) return site("This site", "Not on your job-site list. Lacuna runs here only when you ask.", "");
   if (!url.startsWith("http")) return site("No web page", "Open a job posting to score it.", "");
@@ -433,12 +434,15 @@ async function checkTab() {
   if (!siteEntry) return site(host, "Not on your job-site list. Lacuna runs here only when you ask.", "", false);
   if (!(await chrome.permissions.contains({ origins: [new URL(url).origin + "/*"] })))
     return site(host, "On your list, but Chrome hasn't allowed it. Turn Auto off and on to allow it.", "noaccess", false);
+  if (scored && key === shownUrl) return;  // the same job, maybe its application form: the result is already showing
+  const saved = ((await store.get("history")) || []).find((h) => jobKey(h.url) === key);
+  if (saved) return site(host, `Already saved: ${Math.round(saved.fit * 100)} fit, ${VERDICT[saved.verdict]?.[0] || saved.verdict}. Press Run on this page to score it again.`, "job", true);
   let page;
   try { page = await readPage(tab); } catch { return site(host, "Lacuna can't read this page.", "noaccess", true); }
   if (!page?.job) return site(host, page?.chars < 200 ? "Almost no text on this page. Nothing to score." : "Doesn't look like a job posting, so Lacuna didn't run.", "", true);
   if (!settings.autoScore) return site(host, `Job posting found (${page.job}). Auto-scoring is off in Settings.`, "job", true);
   site(host, `Job posting found (${page.job}). Ran automatically.`, "auto", true);
-  if (!(scored && page.url.split("#")[0] === shownUrl)) score(page);
+  score(page);
 }
 $("siteAuto").addEventListener("change", async (e) => {
   if (!e.target.checked) await removeSite(siteEntry);

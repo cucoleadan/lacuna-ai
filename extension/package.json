@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "test": "node test/parity.mjs"
+    "test": "node test/jobkey.mjs && node test/parity.mjs"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",
