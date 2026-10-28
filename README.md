@@ -1,7 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.png">
-  <img alt="Lacuna: mind the gap, before you apply." src="assets/header-light.png">
-</picture>
+<img alt="Lacuna: mind the gap, before you apply." src="assets/header-dark.png">
 
 Lacuna tells a job seeker how a job posting fits their CV, and where it doesn't: a fit score with an apply / stretch / skip verdict, whether they can work where the job requires, the seniority it asks for, and the posting's must-have requirements their CV does not cover, line by line. It runs in the browser on WebGPU, so the CV never leaves the person's device. *Lacuna* is Latin for "gap".
 
