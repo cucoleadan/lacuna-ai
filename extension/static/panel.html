@@ -7,71 +7,209 @@
   <link rel="stylesheet" href="panel.css">
 </head>
 <body>
-  <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="page" aria-selected="true">This job</button>
-    <button role="tab" data-tab="ranked">Ranked</button>
-    <button role="tab" data-tab="settings">Settings</button>
-  </nav>
-
-  <section id="page" class="view">
-    <div id="status" class="status" hidden></div>
-    <div id="nocv" class="empty" hidden>
-      <p>Add your CV first. It stays in this browser.</p>
-      <button class="primary" data-goto="settings">Add CV</button>
+  <header id="nav" class="nav" hidden>
+    <picture class="logo">
+      <source srcset="brand/lockup-light-text.svg" media="(prefers-color-scheme: dark)">
+      <img src="brand/lockup-dark-text.svg" alt="Lacuna" width="84" height="22">
+    </picture>
+    <div class="navRight">
+      <div class="seg" role="tablist">
+        <button role="tab" data-tab="page" aria-selected="true">This job</button>
+        <button role="tab" data-tab="ranked">Saved <span id="savedCount" class="count">0</span></button>
+      </div>
+      <button class="iconBtn" data-tab="settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></svg>
+      </button>
     </div>
+  </header>
+
+  <!-- ---------- setup ---------- -->
+  <section id="welcome" class="view onboard" hidden>
+    <picture class="logo big">
+      <source srcset="brand/lockup-light-text.svg" media="(prefers-color-scheme: dark)">
+      <img src="brand/lockup-dark-text.svg" alt="Lacuna" width="107" height="28">
+    </picture>
+    <h1 class="hero">Mind the gap,<br><span>before you apply.</span></h1>
+    <p class="lede">See how any job posting fits your CV: a fit score, a clear verdict, and every must-have you're missing.</p>
+    <ol class="intro">
+      <li><span class="num">1</span><span><strong>Add your CV</strong><small>Paste it or drop a file.</small></span></li>
+      <li><span class="num">2</span><span><strong>Download the model</strong><small>76 MB, once. It runs on your device.</small></span></li>
+      <li><span class="num">3</span><span><strong>Open any job posting</strong><small>Lacuna scores it for you.</small></span></li>
+    </ol>
+    <div class="foot">
+      <button class="primary" data-goto="setupCv">Get started
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Your CV never leaves this browser.</p>
+    </div>
+  </section>
+
+  <section id="setupCv" class="view onboard" hidden>
+    <div class="stepper">
+      <button class="iconBtn" id="cvBack" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="bars"><span class="on"></span><span></span></div>
+      <span class="mono faint">1 / 2</span>
+    </div>
+    <h1>Add your CV</h1>
+    <p class="lede">Drop a .txt, .md or .html file, or paste the text. Contact details are removed before saving.</p>
+    <label id="drop" class="drop">
+      <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></span>
+      <strong id="dropTitle">Drop your CV here</strong>
+      <small>or click to choose a file</small>
+      <input type="file" id="cvFile" accept=".txt,.md,.html,.htm" hidden>
+    </label>
+    <div class="or">or paste it</div>
+    <textarea id="cvText" rows="7" placeholder="Paste your CV here…" aria-label="CV text"></textarea>
+    <p id="cvSaved" class="note" aria-live="polite"></p>
+    <p class="privacy box"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Saved only in this browser. It is never uploaded.</p>
+    <div class="foot"><button id="saveCv" class="primary">Save and continue</button></div>
+  </section>
+
+  <section id="setupModel" class="view onboard" hidden>
+    <div class="stepper">
+      <button class="iconBtn" data-goto="setupCv" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="bars"><span class="on"></span><span class="on"></span></div>
+      <span class="mono faint">2 / 2</span>
+    </div>
+    <h1>Pick a model</h1>
+    <p class="lede">It downloads once and runs on your device. You can switch later in Settings.</p>
+    <div id="tiersSetup" class="tiers"></div>
+    <p class="device"><span class="dot"></span><span class="deviceText"></span></p>
+    <div class="foot">
+      <div id="dlBox" class="card dl" hidden>
+        <div class="dlHead"><span id="dlLabel"></span><span id="dlText" class="mono faint"></span></div>
+        <div class="bar"><div id="dlBar"></div></div>
+      </div>
+      <button id="downloadBtn" class="primary">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        <span id="downloadLabel">Download</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ---------- this job ---------- -->
+  <section id="page" class="view" hidden>
+    <div id="status" class="status" hidden></div>
+    <p id="permNote" class="note" hidden>This site is not on the built-in list.
+      <button class="link" data-allow>Allow Lacuna to read job pages on any site</button>, or click the Lacuna icon on the page first.</p>
+
+    <div id="ready" class="ready">
+      <span class="markTile"><img src="brand/mark.svg" alt="" width="31" height="34"></span>
+      <h1>You're all set</h1>
+      <p class="lede">Open a job posting and press Score. On supported sites Lacuna scores it as the page loads.</p>
+      <div class="card sites">
+        <h2>Works out of the box on</h2>
+        <ul class="tags">
+          <li>LinkedIn</li><li>Greenhouse</li><li>Lever</li><li>Ashby</li><li>Workday</li><li>Workable</li><li>SmartRecruiters</li><li>Wellfound</li><li class="more">+9 more</li>
+        </ul>
+        <p class="faint small">On another site? Press Score this page and allow it once.</p>
+      </div>
+    </div>
+
+    <div id="progress" hidden>
+      <header class="jobhead"><span class="initial" id="progInitial"></span><div><p class="jobTitle" id="progTitle"></p><p class="muted small" id="progMeta"></p></div></header>
+      <div class="card stepsCard">
+        <ol id="steps" class="checklist"></ol>
+        <div class="bar thin"><div id="progBar"></div></div>
+      </div>
+    </div>
+
     <div id="result" hidden>
-      <header class="job">
-        <h1 id="jobTitle"></h1>
-        <p id="jobMeta" class="muted"></p>
-      </header>
-      <div class="fit">
-        <div class="fitHead"><span>Fit</span><strong id="fitPct"></strong></div>
-        <div class="bar"><div id="fitBar"></div></div>
-        <p id="verdict" class="verdict"></p>
+      <header class="jobhead"><span class="initial" id="jobInitial"></span><div><h1 class="jobTitle" id="jobTitle"></h1><p id="jobMeta" class="muted small"></p></div></header>
+      <div class="card score">
+        <div class="gauge" id="gauge"><strong id="fitPct"></strong><small>fit</small></div>
+        <div>
+          <span id="verdict" class="pill"></span>
+          <p id="verdictHead" class="vhead"></p>
+          <p id="verdictSub" class="muted small"></p>
+        </div>
       </div>
       <ul class="chips">
-        <li id="chipLocation"></li>
-        <li id="chipSeniority"></li>
-        <li id="chipMust"></li>
+        <li id="chipLocation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>Location</span><strong></strong></li>
+        <li id="chipSeniority"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg><span>Seniority</span><strong></strong></li>
+        <li id="chipMust"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Must-haves</span><strong></strong></li>
       </ul>
-      <div id="gapsBox" class="list" hidden><h2>Gaps in this job</h2><p class="muted small">Must-haves your CV doesn't cover.</p><ul id="gaps"></ul></div>
-      <div id="partialBox" class="list" hidden><h2>Partial matches</h2><ul id="partial"></ul></div>
-      <details id="metBox" class="list" hidden><summary>Met <span id="metCount"></span></summary><ul id="met"></ul></details>
-      <p id="truncNote" class="muted small" hidden>Long CV and posting: the end of the longer one was cut to fit 4,096 tokens.</p>
-      <p class="muted small" id="timing"></p>
+      <section id="gapsBox" class="list" hidden><h2>Gaps <span>Must-haves your CV doesn't show</span></h2><ul id="gaps" class="card items gap"></ul></section>
+      <section id="partialBox" class="list" hidden><h2>Partly there</h2><ul id="partial" class="card items part"></ul></section>
+      <details id="metBox" class="list card covered" hidden>
+        <summary><span class="ico ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Covered <span id="metCount" class="mono faint"></span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <ul id="met"></ul>
+      </details>
+      <p id="truncNote" class="note" hidden>Long CV and posting: the end of the longer one was cut to fit 4,096 tokens.</p>
+      <div class="metaRow">
+        <span id="timing" class="mono faint"></span>
+        <button id="rescoreBtn" class="ghost"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/></svg>Re-score</button>
+      </div>
     </div>
-    <div class="actions"><button id="scoreBtn" class="primary">Score this page</button></div>
-    <p id="permNote" class="muted small" hidden>This site is not on the built-in list.
-      <button id="allowAll" class="link">Allow Lacuna to read job pages on any site</button>, or click the Lacuna icon on the page first.</p>
+
+    <div class="foot pagefoot">
+      <button id="scoreBtn" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Score this page</button>
+    </div>
   </section>
 
+  <!-- ---------- saved ---------- -->
   <section id="ranked" class="view" hidden>
-    <div class="rankHead"><p class="muted small">Jobs you scored, best fit first.</p><button id="clearHist" class="link">Clear</button></div>
+    <div class="rankHead">
+      <div><h1>Saved jobs</h1><p class="muted small">Everything you've scored, best fit first.</p></div>
+      <button id="clearHist" class="ghost">Clear all</button>
+    </div>
+    <div id="filters" class="seg full"></div>
     <ol id="rankList" class="rank"></ol>
-    <p id="rankEmpty" class="empty">Nothing scored yet.</p>
+    <p id="rankEmpty" class="empty" hidden>Nothing scored yet. Open a job posting to start.</p>
   </section>
 
+  <!-- ---------- settings ---------- -->
   <section id="settings" class="view" hidden>
-    <h2>Your CV</h2>
-    <p class="muted small">Paste it, or load a .txt, .md or .html file. It is stored only in this browser and never sent anywhere.</p>
-    <textarea id="cvText" rows="10" placeholder="Paste your CV here"></textarea>
-    <div class="row"><input type="file" id="cvFile" accept=".txt,.md,.html,.htm"><span><button id="deleteCv" class="link">Delete CV</button> <button id="saveCv" class="primary">Save CV</button></span></div>
-    <p id="cvSaved" class="muted small"></p>
+    <div class="subhead">
+      <button class="iconBtn" id="settingsBack" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1>Settings</h1>
+    </div>
 
-    <h2>Model</h2>
-    <div id="tiers" class="tiers"></div>
-    <details class="small">
-      <summary>Advanced</summary>
-      <label>Hugging Face repo for this tier <input id="repo" type="text" spellcheck="false"></label>
-      <label>Or load the model files from a folder <input id="folder" type="file" webkitdirectory multiple></label>
-      <button id="clearModels" class="link">Delete downloaded models</button>
-      <p id="device" class="muted"></p>
+    <section class="group">
+      <h2>Your CV</h2>
+      <div class="card row">
+        <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></span>
+        <span class="grow"><strong id="cvStatus"></strong><small id="cvInfo" class="faint"></small></span>
+      </div>
+      <div class="btnRow"><button id="editCv" class="secondary">Replace</button><button id="deleteCv" class="secondary danger">Delete</button></div>
+    </section>
+
+    <section class="group">
+      <h2>Model</h2>
+      <div id="tiers" class="tiers"></div>
+      <p class="device"><span class="dot"></span><span class="deviceText"></span></p>
+    </section>
+
+    <section class="group">
+      <h2>Scoring</h2>
+      <div class="card">
+        <label class="switchRow"><span class="grow"><strong>Score automatically</strong><small>When you open a job page on a supported site.</small></span><input type="checkbox" role="switch" id="autoScore"></label>
+        <label class="switchRow"><span class="grow"><strong>Count US-only remote as open</strong><small>For contractors outside the US. Shows "US-remote" instead of "Not eligible".</small></span><input type="checkbox" role="switch" id="usRemote"></label>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Sites</h2>
+      <div class="card row">
+        <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+        <span class="grow"><strong>17 job sites built in</strong><small class="faint">LinkedIn, Greenhouse, Lever, Ashby and more</small></span>
+        <button class="secondary small" id="allowAll" data-allow>Allow all</button>
+      </div>
+    </section>
+
+    <details class="card advanced">
+      <summary>Advanced <span class="faint">custom model, storage</span></summary>
+      <label class="field">Hugging Face repo for this model <input id="repo" type="text" spellcheck="false"></label>
+      <div class="btnRow">
+        <label class="secondary">Load from folder<input id="folder" type="file" webkitdirectory multiple hidden></label>
+        <button id="clearModels" class="secondary danger">Delete models</button>
+      </div>
+      <p id="modelNote" class="faint small" aria-live="polite"></p>
     </details>
 
-    <h2>Location</h2>
-    <label class="check"><input type="checkbox" id="usRemote"> I accept US-only remote roles as a contractor</label>
-    <p class="muted small">The model treats US-only remote roles as not open to people outside the US. With this on, they show as "US-remote" instead of "Not eligible".</p>
-    <label class="check"><input type="checkbox" id="autoScore"> Score automatically when I switch to a job page</label>
+    <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Your CV and results never leave this browser.</p>
+    <p class="mono faint center small" id="version"></p>
   </section>
   <script type="module" src="panel.js"></script>
 </body>

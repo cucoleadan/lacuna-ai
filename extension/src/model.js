@@ -9,10 +9,10 @@ ort.env.webgpu.powerPreference = "high-performance";  // laptops: the discrete G
 
 export const TIERS = {
   celer: { label: "Celer", repo: "lacuna-ai/lacuna-celer", file: "model_q4f16.onnx", mb: 76,
-           note: "Fast. Ettin-68M distilled from Altus. Default." },
+           note: "Fast and small. As accurate as Altus on our tests." },
   // fp16, not q4f16: 4-bit costs the large model 0.05 verdict F1, most of its edge over the small one
   altus: { label: "Altus", repo: "lacuna-ai/lacuna-altus", file: "model_fp16.onnx", mb: 790,
-           note: "Thorough. ModernBERT-large, uncompressed (fp16). Big one-time download; needs a GPU with ~2 GB free." },
+           note: "The large model. Needs about 2 GB of free GPU memory." },
 };
 const FILES = ["lacuna.json", "tokenizer.json", "tokenizer_config.json"];
 const CACHE = "lacuna-models-v1";

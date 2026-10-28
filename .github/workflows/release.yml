@@ -1,0 +1,78 @@
+# Bump "version" in extension/static/manifest.json and push to main: this builds the extension and publishes
+# GitHub release v<version> with the zip. Pushes that keep the version, or a version already released, do nothing.
+name: Release extension
+
+on:
+  push:
+    branches: [main]
+    paths: [extension/static/manifest.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # tags and history, for the change list
+
+      - name: Read version
+        id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version extension/static/manifest.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "v$version is already released"; echo "new=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.v.outputs.new == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+
+      - name: Build
+        if: steps.v.outputs.new == 'true'
+        working-directory: extension
+        run: |
+          npm ci
+          npm run build
+
+      - name: Zip and publish
+        if: steps.v.outputs.new == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          zip="lacuna-extension-$VERSION.zip"
+          (cd extension/dist && zip -qr "../../$zip" . -x '*.map')
+          sha=$(sha256sum "$zip" | cut -d' ' -f1)
+          prev=$(git describe --tags --abbrev=0 2>/dev/null || true)
+          changes=$(git log --format='- %s' ${prev:+$prev..}HEAD -- extension)
+          cat > notes.md <<EOF
+          ## Changes
+
+          $changes
+
+          ## Install
+
+          1. Download **\`$zip\`** below and unzip it.
+          2. Open \`chrome://extensions\` and turn on **Developer mode** (top right).
+          3. Click **Load unpacked** and pick the unzipped folder. Upgrading: remove the old version first. Your CV and settings are kept per install, so add the CV again.
+          4. Click the Lacuna icon and follow the two setup steps: add your CV, then download the model. Then open a job posting.
+
+          Lacuna downloads its model once from Hugging Face: [Lacuna Celer](https://huggingface.co/lacuna-ai/lacuna-celer) (76 MB, default) or [Lacuna Altus](https://huggingface.co/lacuna-ai/lacuna-altus) (790 MB, for a capable GPU). Chrome 121 or newer; a GPU with WebGPU is recommended.
+
+          [Privacy policy](https://github.com/${{ github.repository }}/blob/main/extension/PRIVACY.md): no account, no server, no tracking.
+
+          SHA-256 of the zip: \`$sha\`
+          EOF
+          gh release create "v$VERSION" "$zip" --title "Lacuna $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
