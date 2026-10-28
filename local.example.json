@@ -2,8 +2,12 @@
  "llm_url": "https://<your-provider>/v1/chat/completions (any OpenAI-compatible endpoint serving DeepSeek V4.1 Flash)",
  "llm_model": "<provider's model id for DeepSeek V4.1 Flash>",
  "llm_headers": {},
- "token_cmd": ["<command that prints a bearer token>"],
+ "token_cmd": [
+  "<command that prints a bearer token>"
+ ],
  "pages_db": "<path to postings sqlite db>",
  "jobs_db": "<path to judged-jobs sqlite db (labeller check only)>",
- "kaggle_user": "<kaggle username>"
+ "kaggle_user": "<kaggle username>",
+ "kaggle_dataset": "<private Kaggle dataset name, default lacuna-data>",
+ "kaggle_kernel_prefix": "<notebook name prefix, default lacuna->"
 }

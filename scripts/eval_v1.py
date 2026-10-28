@@ -33,7 +33,7 @@ def main():
         out = ROOT / "data" / "runs" / name / "out"
         m = json.loads((out / "metrics.json").read_text())
         tok = AutoTokenizer.from_pretrained(out / "tokenizer")
-        model = T.JobFit(m["model"])
+        model = T.LacunaModel(m["model"])
         model.load_state_dict(torch.load(out / "best.pt", map_location="cpu"))
         t0 = time.time()
         enc = [T.encode(tok, ex, m["args"]["max_len"]) for ex in v1]

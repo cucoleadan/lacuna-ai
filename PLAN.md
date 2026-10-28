@@ -1,4 +1,6 @@
-# jobfit: plan
+# Lacuna: plan
+
+*Working name during development: jobfit.*
 
 ## Goal
 

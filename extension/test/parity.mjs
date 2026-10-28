@@ -6,10 +6,10 @@ import * as ort from "onnxruntime-node";
 import { encodePair, interpret, normalizeCv } from "../src/core.js";
 
 const root = new URL("../../", import.meta.url).pathname;
-const exp = root + "export/jobfit-small/";
+const exp = root + "export/lacuna-celer/";
 const read = (p) => JSON.parse(readFileSync(p, "utf8"));
 const tok = new Tokenizer(read(exp + "tokenizer.json"), read(exp + "tokenizer_config.json"));
-const cfg = read(exp + "jobfit.json");
+const cfg = read(exp + "lacuna.json");
 
 const cvs = read(root + "data/parity/cv.json");
 const cvBad = cvs.filter((c) => normalizeCv(c.raw) !== c.norm);

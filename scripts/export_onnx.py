@@ -1,10 +1,10 @@
 """Trained run -> ONNX for the browser (ONNX Runtime Web / Transformers.js, WebGPU).
 
-  python scripts/export_onnx.py d68-v3-s0 --out export/jobfit-small
-  python scripts/export_onnx.py mblarge-v3-e6 --out export/jobfit-large
+  python scripts/export_onnx.py d68-v3-s0 --out export/lacuna-celer
+  python scripts/export_onnx.py mblarge-v3-e6 --out export/lacuna-altus
 
 Writes model.onnx (fp32), model_fp16.onnx, model_q4f16.onnx (4-bit MatMul weights, fp16 elsewhere), the tokenizer,
-and jobfit.json (labels, per-head temperatures, max length) that the extension reads. Inputs: input_ids,
+and lacuna.json (labels, per-head temperatures, max length) that the extension reads. Inputs: input_ids,
 attention_mask (int64, [batch, seq]). Outputs (fp32): verdict, location, seniority, must_met logits [batch, k];
 line_met [batch, seq, 4] and line_must [batch, seq] per token, averaged over each job line's tokens in JS (see train.py).
 """
@@ -93,7 +93,7 @@ def main():
     src, out = Path(a.src) if a.src else ROOT / "data" / "runs" / a.run / "out", Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     m = json.loads((src / "metrics.json").read_text())
-    model = T.JobFit(m["model"])
+    model = T.LacunaModel(m["model"])
     model.load_state_dict(torch.load(src / "best.pt", map_location="cpu"))
     model.eval()
     export(model, out / "model.onnx")
@@ -102,7 +102,7 @@ def main():
         quantize_q4(out / "model_fp16.onnx", out / "model_q4f16.onnx")
     shutil.copytree(src / "tokenizer", out, dirs_exist_ok=True)
     labels = json.loads(Path(a.labels).read_text())
-    (out / "jobfit.json").write_text(json.dumps({
+    (out / "lacuna.json").write_text(json.dumps({
         "base_model": m["model"], "max_len": m["args"]["max_len"], "temperatures": m["temperatures"],
         "labels": {**labels, "must_met": ["no", "yes"]}, "outputs": OUTPUTS}, indent=1))
     for f in sorted(out.glob("*.onnx")):

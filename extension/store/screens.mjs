@@ -54,7 +54,7 @@ const server = createServer((req, res) => {
   if (j) { res.writeHead(200, { "content-type": "text/html; charset=utf-8" }); return res.end(page(j)); }
   if (req.url.startsWith("/model/")) {
     try {
-      const f = readFileSync(root + "export/jobfit-small/" + req.url.slice(7));
+      const f = readFileSync(root + "export/lacuna-celer/" + req.url.slice(7));
       res.writeHead(200, { "content-length": f.length, "access-control-allow-origin": "*" });
       return res.end(f);
     } catch { /* 404 below */ }

@@ -10,7 +10,7 @@ sys.path[:0] = [str(ROOT / "train"), str(ROOT / "scripts")]
 import train as T
 from cvtext import normalize_cv
 out = ROOT / "data" / "parity"; out.mkdir(parents=True, exist_ok=True)
-exp = ROOT / "export" / "jobfit-small"
+exp = ROOT / "export" / "lacuna-celer"
 tok = AutoTokenizer.from_pretrained(exp)
 raw = sqlite3.connect(ROOT / "data" / "work.db").execute("select cv from cvs order by id limit 300").fetchall()
 (out / "cv.json").write_text(json.dumps([{"raw": r[0], "norm": normalize_cv(r[0])} for r in raw]))

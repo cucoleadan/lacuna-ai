@@ -1,4 +1,6 @@
-# jobfit: experiment log
+# Lacuna: experiment log
+
+*Working name during development: jobfit.*
 
 Every run that produced a number: what ran, on what data, with what settings, and the result. Paper tables and figures are built from this file and the files it points to. `DECISIONS.md` says *why*; this file says *what happened*.
 

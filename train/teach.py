@@ -19,7 +19,7 @@ import torch.distributed as dist
 import torch.nn.functional as F
 from transformers import AutoTokenizer
 
-from train import HEADS, JobFit, batches, collate, encode, line_logits, load
+from train import HEADS, LacunaModel, batches, collate, encode, line_logits, load
 
 
 @torch.no_grad()
@@ -49,7 +49,7 @@ def main():
     ckpt = sorted(glob.glob(args.ckpt, recursive=True))[0]
     temps = json.loads((Path(ckpt).parent / "metrics.json").read_text())["temperatures"]
     tok = AutoTokenizer.from_pretrained(args.model)
-    model = JobFit(args.model)
+    model = LacunaModel(args.model)
     model.load_state_dict(torch.load(ckpt, map_location="cpu"))
     model.to(device).eval()
 

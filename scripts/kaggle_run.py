@@ -21,7 +21,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 import config  # noqa: E402
 
 USER = config.CFG.get("kaggle_user", "<kaggle-user>")
-DS = "jobfit-data"
+DS = config.CFG.get("kaggle_dataset", "lacuna-data")
+PREFIX = config.CFG.get("kaggle_kernel_prefix", "lacuna-")  # notebooks are named <prefix><run name>
 KAGGLE = str(ROOT / ".venv" / "bin" / "kaggle")
 
 RUNNER = '''import glob, os, subprocess, sys
@@ -71,21 +72,21 @@ def cmd_push(a, extra):
     args = ["--model", a.model] + (["--limit", str(a.limit)] if a.limit else []) + extra
     (k / "run.py").write_text(f"ARGS = {json.dumps(args)}\nKEEP_WEIGHTS = {not a.limit}\nSCRIPT = {a.script!r}\n" + RUNNER)
     (k / "kernel-metadata.json").write_text(json.dumps({
-        "id": f"{USER}/jobfit-{a.name}", "title": f"jobfit-{a.name}", "code_file": "run.py", "language": "python",
+        "id": f"{USER}/{PREFIX}{a.name}", "title": f"{PREFIX}{a.name}", "code_file": "run.py", "language": "python",
         "kernel_type": "script", "is_private": True, "enable_gpu": True, "enable_internet": True,
         "machine_shape": "NvidiaTeslaT4", "dataset_sources": [f"{USER}/{DS}"],
-        "kernel_sources": [f"{USER}/jobfit-{a.source}"] if a.source else []}, indent=1))
+        "kernel_sources": [f"{USER}/{PREFIX}{a.source}"] if a.source else []}, indent=1))
     sh(KAGGLE, "kernels", "push", "-p", str(k), "--accelerator", "NvidiaTeslaT4")
 
 
 def cmd_status(a):
-    sh(KAGGLE, "kernels", "status", f"{USER}/jobfit-{a.name}")
+    sh(KAGGLE, "kernels", "status", f"{USER}/{PREFIX}{a.name}")
 
 
 def cmd_fetch(a):
     out = ROOT / "data" / "runs" / a.name
     out.mkdir(parents=True, exist_ok=True)
-    sh(KAGGLE, "kernels", "output", f"{USER}/jobfit-{a.name}", "-p", str(out))
+    sh(KAGGLE, "kernels", "output", f"{USER}/{PREFIX}{a.name}", "-p", str(out))
     m = list(out.rglob("metrics.json"))
     if m:
         print(json.dumps(json.loads(m[0].read_text())["test"], indent=1))

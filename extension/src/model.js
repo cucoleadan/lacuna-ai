@@ -14,7 +14,7 @@ export const TIERS = {
   altus: { label: "Altus", repo: "lacuna-ai/lacuna-altus", file: "model_fp16.onnx", mb: 790,
            note: "Thorough. ModernBERT-large, uncompressed (fp16). Big one-time download; needs a GPU with ~2 GB free." },
 };
-const FILES = ["jobfit.json", "tokenizer.json", "tokenizer_config.json"];
+const FILES = ["lacuna.json", "tokenizer.json", "tokenizer_config.json"];
 const CACHE = "lacuna-models-v1";
 const LOCAL = "https://lacuna.local/";  // cache keys for files picked from disk
 
@@ -41,7 +41,7 @@ async function fetchCached(u, onBytes) {
   return blob.arrayBuffer();
 }
 
-/** Files chosen from a folder (model_q4f16.onnx, jobfit.json, tokenizer files) -> cached under a local key. */
+/** Files chosen from a folder (model_q4f16.onnx, lacuna.json, tokenizer files) -> cached under a local key. */
 export async function importFolder(files, name = "local") {
   const cache = await caches.open(CACHE), base = `${LOCAL}${name}/`;
   for (const f of files) await cache.put(base + f.name, new Response(f));

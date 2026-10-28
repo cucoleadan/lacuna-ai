@@ -1,6 +1,6 @@
 // End-to-end smoke test: built extension in headless Chromium scores a local job page (CPU/WASM: no GPU here).
 //   node build.mjs && node test/e2e.mjs
-// FROM_HUB=1 downloads the published model from Hugging Face instead. Serves export/jobfit-small/ as the model and a job page built from a validation pair (data/parity/, private).
+// FROM_HUB=1 downloads the published model from Hugging Face instead. Serves export/lacuna-celer/ as the model and a job page built from a validation pair (data/parity/, private).
 import { cpSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { chromium } from "playwright";
@@ -22,7 +22,7 @@ const server = createServer((req, res) => {
   if (req.url === "/job.html") { res.writeHead(200, { "content-type": "text/html" }); return res.end(page); }
   if (req.url.startsWith("/model/")) {
     try {
-      const f = readFileSync(root + "export/jobfit-small/" + req.url.slice(7));
+      const f = readFileSync(root + "export/lacuna-celer/" + req.url.slice(7));
       res.writeHead(200, { "content-type": types[req.url.slice(req.url.lastIndexOf("."))] || "application/octet-stream",
                            "content-length": f.length, "access-control-allow-origin": "*" });
       return res.end(f);

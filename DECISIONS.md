@@ -1,4 +1,6 @@
-# jobfit: decision log
+# Lacuna: decision log
+
+*Working name during development: jobfit.*
 
 Every choice that shapes the model, its data or its labels, with the reason and what was rejected. The model card is written from this file. Newest decisions go at the bottom; superseded ones stay, marked as such.
 
@@ -174,5 +176,5 @@ Two 6-epoch large runs (v2 and v3 CV text) disagree: v2 scores higher on the sha
 
 - **Fast tier (default): distilled Ettin-68M (`d68-v3-s0`), q4f16, 76 MB.** Chosen on validation verdict among the three seeds. 4-bit weights cost nothing measurable: on 100 validation pairs the argmax matches PyTorch on 94-99% per head, F1 moves ±0.04 both ways (noise).
 - **Quality tier (opt-in): ModernBERT-large (`mblarge-v3-e6`), fp16, 790 MB.** q4f16 (297 MB) was tested and rejected: verdict F1 0.720 → 0.669 and seniority 0.789 → 0.751 on the same 100 pairs, which is most of large's edge over the small model. A Quality tier that is barely better than Fast has no reason to exist, so it ships uncompressed; fp16 matches PyTorch on 100% of argmaxes.
-- **Off-the-shelf similarity is not enough:** on the author's private real-CV check, TF-IDF and two general embedding models (bge-m3, gte-modernbert-base, untrained) rank the author's applied jobs well below both jobfit models, with the biggest gap on location, which similarity cannot read.
+- **Off-the-shelf similarity is not enough:** on the author's private real-CV check, TF-IDF and two general embedding models (bge-m3, gte-modernbert-base, untrained) rank the author's applied jobs well below both Lacuna models, with the biggest gap on location, which similarity cannot read.
 - **No paper:** the project ships the model and the Chrome extension.

@@ -1,6 +1,6 @@
 """Exported ONNX models vs the PyTorch checkpoint on validation examples (CPU).
 
-  python scripts/check_onnx.py d68-v3-s0 export/jobfit-small --n 200
+  python scripts/check_onnx.py d68-v3-s0 export/lacuna-celer --n 200
 
 Reports macro-F1 per head for PyTorch and each .onnx file, and how often the ONNX argmax matches PyTorch's.
 """
@@ -37,7 +37,7 @@ def main():
     data = val[:: max(1, len(val) // a.n)][: a.n]  # spread over the split
     enc = [T.encode(tok, ex, m["args"]["max_len"]) for ex in data]
 
-    model = T.JobFit(m["model"])
+    model = T.LacunaModel(m["model"])
     model.load_state_dict(torch.load(src / "best.pt", map_location="cpu"))
     model.eval()
     def report(name, p):

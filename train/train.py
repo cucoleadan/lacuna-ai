@@ -1,6 +1,6 @@
-"""jobfit multi-head training (runs on Kaggle 2×T4 with torchrun, or one GPU / CPU for smoke tests).
+"""Lacuna multi-head training (runs on Kaggle 2×T4 with torchrun, or one GPU / CPU for smoke tests).
 
-  torchrun --nproc_per_node 2 train.py --model answerdotai/ModernBERT-base --data /kaggle/input/jobfit-data
+  torchrun --nproc_per_node 2 train.py --model answerdotai/ModernBERT-base --data /kaggle/input/lacuna-data
 
 Heads on one encoder pass over "CV [SEP] job":
   verdict (apply/stretch/skip), location (yes/unclear/no), seniority (below/at/above), must_met (yes/no),
@@ -94,7 +94,7 @@ def collate(items, pad_id):
 
 # ---------- model ----------
 
-class JobFit(nn.Module):
+class LacunaModel(nn.Module):
     def __init__(self, name):
         super().__init__()
         self.enc = AutoModel.from_pretrained(name, attn_implementation="sdpa")
@@ -311,7 +311,7 @@ def main():
         print(f"encoded in {time.time() - t0:.0f}s; train {len(enc['train'])} ex, {n_tok / 1e6:.1f}M tokens; "
               f"val {len(enc['val'])}; test {len(enc['test'])}", flush=True)
 
-    model = JobFit(args.model).to(device)
+    model = LacunaModel(args.model).to(device)
     model.enc.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     if ddp:
         model = nn.parallel.DistributedDataParallel(model, device_ids=[device.index])
