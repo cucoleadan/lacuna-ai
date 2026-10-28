@@ -19,6 +19,7 @@ __pycache__/
 local.json
 *.private.md
 AGENTS.md
+CLAUDE.md
 
 # private: check against the author's own job-search verdicts
 scripts/labeller_check.py

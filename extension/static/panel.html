@@ -120,6 +120,8 @@
     </div>
 
     <div id="result" hidden>
+      <p id="savedNote" class="savedNote" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        <span class="grow"><strong>Already scored</strong><small id="savedWhen"></small></span><span class="tag">From Saved</span></p>
       <header class="jobhead"><span class="initial" id="jobInitial"></span><div><h1 class="jobTitle" id="jobTitle"></h1><p id="jobMeta" class="muted small"></p></div></header>
       <div class="card score">
         <div class="gauge" id="gauge"><strong id="fitPct"></strong><small>fit</small></div>
@@ -144,12 +146,11 @@
       <p id="truncNote" class="note" hidden>Long CV and posting: the end of the longer one was cut to fit 4,096 tokens.</p>
       <div class="metaRow">
         <span id="timing" class="mono faint"></span>
-        <button id="rescoreBtn" class="ghost"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/></svg>Re-score</button>
       </div>
     </div>
 
     <div class="foot pagefoot">
-      <button id="scoreBtn" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Run on this page</button>
+      <button id="scoreBtn" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg><span id="scoreLabel">Run on this page</span></button>
     </div>
   </section>
 

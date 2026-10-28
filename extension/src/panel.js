@@ -46,6 +46,7 @@ function phase(p) {
   $("ready").hidden = p !== "ready";
   $("progress").hidden = p !== "progress";
   $("result").hidden = p !== "result";
+  $("scoreLabel").textContent = p === "result" ? "Re-run on this page" : "Run on this page";
 }
 
 // ---------- scoring ----------
@@ -104,7 +105,7 @@ async function score(given) {
   const cv = await store.get("cv");
   if (!cv) return show("welcome");
   busy = true;
-  $("scoreBtn").disabled = $("rescoreBtn").disabled = true;
+  $("scoreBtn").disabled = true;
   $("permNote").hidden = true;
   status("");
   try {
@@ -138,15 +139,16 @@ async function score(given) {
     const out = await run(m, enc.inputIds);
     const r = interpret(out, enc, page.text, m.cfg, settings);
     const s = (performance.now() - t0) / 1000;
-    render(page, r, `${enc.inputIds.length.toLocaleString()} tokens · ${s.toFixed(1)} s · ${m.device === "webgpu" ? "GPU" : "CPU"} · ${TIERS[tier].label}`);
+    const timing = `${enc.inputIds.length.toLocaleString()} tokens · ${s.toFixed(1)} s · ${m.device === "webgpu" ? "GPU" : "CPU"} · ${TIERS[tier].label}`;
+    render(page, r, timing);
     if (!page.job) status("This page doesn't look like a job posting, so the score may not mean much.");
-    await remember(page, r, tier);
+    await remember(page, r, tier, timing);
   } catch (e) {
     console.error(e);
     status(`Something went wrong: ${e.message || e}`, true);
   } finally {
     busy = false;
-    $("scoreBtn").disabled = $("rescoreBtn").disabled = false;
+    $("scoreBtn").disabled = false;
     if (!$("progress").hidden) phase(scored ? "result" : "ready");
   }
 }
@@ -173,8 +175,11 @@ function list(id, items, icon) {
   ul.closest(".list").hidden = !items.length;
 }
 
-function render(page, r, timing) {
+// savedAt: the result comes from Saved (scored then), not from a run just now
+function render(page, r, timing, savedAt) {
   scored = true;
+  $("savedNote").hidden = !savedAt;
+  if (savedAt) $("savedWhen").textContent = new Date(savedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
   shownUrl = jobKey(page.url);
   phase("result");
   $("jobInitial").textContent = initial(page);
@@ -200,10 +205,14 @@ function render(page, r, timing) {
   $("timing").textContent = timing;
 }
 
-async function remember(page, r, tier) {
+async function remember(page, r, tier, timing) {
   const hist = (await store.get("history")) || [];
+  const text = (x) => ({ text: x.text, pMust: +x.pMust.toFixed(2) });
   const row = { url: jobKey(page.url), title: page.title, company: page.company, location: page.location, fit: r.fit,
-                verdict: r.verdict, loc: r.location, sen: r.seniority, nGaps: r.gaps.length, gaps: r.gaps.map((g) => g.text).slice(0, 5), tier, at: Date.now() };
+                verdict: r.verdict, loc: r.location, sen: r.seniority, nGaps: r.gaps.length, gaps: r.gaps.map((g) => g.text).slice(0, 5), tier, at: Date.now(),
+                // what render() needs to show it again in full
+                r: { fit: r.fit, verdict: r.verdict, location: r.location, pLocationNo: r.pLocationNo, seniority: r.seniority, mustMet: r.mustMet,
+                     truncated: r.truncated, gaps: r.gaps.map(text), partial: r.partial.map(text), met: r.met.map(text) }, timing };
   const next = [row, ...hist.filter((h) => jobKey(h.url) !== row.url)].slice(0, 2000);  // rows saved before jobKey keep raw URLs
   await store.set("history", next);
   $("savedCount").textContent = next.length;
@@ -403,7 +412,6 @@ $("scoreBtn").addEventListener("click", async () => {
   if (siteOrigin) await chrome.permissions.request({ origins: [siteOrigin] }).catch(() => false);
   score();
 });
-$("rescoreBtn").addEventListener("click", () => score());
 document.querySelectorAll("[data-allow]").forEach((b) => b.addEventListener("click", async () => {
   if (!(await chrome.permissions.request({ origins: ["https://*/*"] }))) return;
   if (current === "settings") renderSettings(); else score();
@@ -436,7 +444,12 @@ async function checkTab() {
     return site(host, "On your list, but Chrome hasn't allowed it. Turn Auto off and on to allow it.", "noaccess", false);
   if (scored && key === shownUrl) return;  // the same job, maybe its application form: the result is already showing
   const saved = ((await store.get("history")) || []).find((h) => jobKey(h.url) === key);
-  if (saved) return site(host, `Already saved: ${Math.round(saved.fit * 100)} fit, ${VERDICT[saved.verdict]?.[0] || saved.verdict}. Press Run on this page to score it again.`, "job", true);
+  if (saved?.r) {
+    site(host, "Already scored. Showing the saved result.", "job", true);
+    return render({ url: saved.url, title: saved.title, company: saved.company, location: saved.location }, saved.r, saved.timing || "", saved.at);
+  }
+  // saved before results were kept in full
+  if (saved) return site(host, `Already scored: ${Math.round(saved.fit * 100)} fit, ${VERDICT[saved.verdict]?.[0] || saved.verdict}. Press Run on this page to see it again.`, "job", true);
   let page;
   try { page = await readPage(tab); } catch { return site(host, "Lacuna can't read this page.", "noaccess", true); }
   if (!page?.job) return site(host, page?.chars < 200 ? "Almost no text on this page. Nothing to score." : "Doesn't look like a job posting, so Lacuna didn't run.", "", true);

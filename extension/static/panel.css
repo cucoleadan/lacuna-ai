@@ -159,9 +159,14 @@ input[type="text"] { height: 38px; padding: 0 12px; border-radius: 10px; }
 .tags li { font-size: 12.5px; padding: 5px 10px; border-radius: 8px; background: var(--surface-2); color: var(--fg-2); }
 .tags li.more { background: none; border: 1px dashed var(--line-2); color: var(--faint); }
 .pagefoot { padding-top: 16px; }
-#result:not([hidden]) ~ .pagefoot, #progress:not([hidden]) ~ .pagefoot { display: none; }
+#progress:not([hidden]) ~ .pagefoot { display: none; }
 #result, #progress { display: flex; flex-direction: column; gap: 14px; padding-bottom: 16px; }
 
+.savedNote { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 10px 12px; border-radius: 12px;
+             background: var(--good-bg); color: var(--fg); }
+.savedNote > svg { color: var(--good); }
+.savedNote small { color: var(--muted); }
+.savedNote .tag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
 .jobhead { display: flex; gap: 12px; align-items: flex-start; }
 .initial { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex: none; border-radius: 10px;
            background: var(--surface-2); border: 1px solid var(--line); font-weight: 600; color: var(--fg-2); }
@@ -221,7 +226,7 @@ input[type="text"] { height: 38px; padding: 0 12px; border-radius: 10px; }
 .covered ul { list-style: none; margin: 0; padding: 6px 0; border-top: 1px solid var(--line); }
 .covered li { padding: 7px 14px 7px 42px; font-size: 13px; color: var(--muted); }
 .metaRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.metaRow .mono { font-size: 11px; }
+.metaRow .mono { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- saved ---------- */
 .rankHead { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
