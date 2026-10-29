@@ -193,7 +193,7 @@ function render(page, r, timing, savedAt) {
   $("verdictHead").textContent = head;
   const covered = r.met.filter((x) => x.pMust >= 0.5).length, must = covered + r.gaps.length + r.partial.length;
   $("verdictSub").textContent = !must ? "No clear must-haves in this posting."
-    : `Your CV covers ${covered} of ${plural(must, "must-have")}${r.partial.length ? `, ${r.partial.length} partly` : ""}.`;
+    : `${plural(must, "must-have")}: ${[covered && `${covered} met`, r.partial.length && `${r.partial.length} partly`, r.gaps.length && `${r.gaps.length} missing`].filter(Boolean).join(", ")}.`;
   chip("chipLocation", LOCATION[r.location], `P(not eligible) = ${r.pLocationNo.toFixed(2)}`);
   chip("chipSeniority", SENIORITY[r.seniority], SENIORITY_TITLE[r.seniority]);
   chip("chipMust", r.gaps.length ? [plural(r.gaps.length, "gap"), "bad"] : r.mustMet ? ["All covered", "good"] : ["Some missing", "bad"]);
@@ -453,8 +453,8 @@ async function checkTab() {
   let page;
   try { page = await readPage(tab); } catch { return site(host, "Lacuna can't read this page.", "noaccess", true); }
   if (!page?.job) return site(host, page?.chars < 200 ? "Almost no text on this page. Nothing to score." : "Doesn't look like a job posting, so Lacuna didn't run.", "", true);
-  if (!settings.autoScore) return site(host, `Job posting found (${page.job}). Auto-scoring is off in Settings.`, "job", true);
-  site(host, `Job posting found (${page.job}). Ran automatically.`, "auto", true);
+  if (!settings.autoScore) return site(host, "Job posting. Auto-scoring is off in Settings.", "job", true);
+  site(host, "Job posting, scored automatically.", "auto", true);
   score(page);
 }
 $("siteAuto").addEventListener("change", async (e) => {

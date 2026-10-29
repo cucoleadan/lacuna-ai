@@ -3,7 +3,7 @@
 Lacuna tells a job seeker how a job posting fits their CV, and where it doesn't: a fit score with an apply / stretch / skip verdict, whether they can work where the job requires, the seniority it asks for, and the posting's must-have requirements their CV does not cover, line by line. It runs in the browser on WebGPU, so the CV never leaves the person's device. *Lacuna* is Latin for "gap".
 
 - **Models** on Hugging Face: [Lacuna Celer](https://huggingface.co/lacuna-ai/lacuna-celer) (68M, 76 MB, the default) and [Lacuna Altus](https://huggingface.co/lacuna-ai/lacuna-altus) (395M, 790 MB)
-- **Chrome extension:** [download the latest release](https://github.com/cucoleadan/lacuna-ai/releases/latest) (unzip, then *Load unpacked* in `chrome://extensions`); source in [`extension/`](extension/). A side panel that scores the job page you are on and keeps a ranked list of the jobs you've checked
+- **Chrome extension:** [install from the Chrome Web Store](https://chromewebstore.google.com/detail/lacuna/jlgkehmahinlnbnmnignpnkpnambnian), or [download the latest release](https://github.com/cucoleadan/lacuna-ai/releases/latest) (unzip, then *Load unpacked* in `chrome://extensions`); source in [`extension/`](extension/). A side panel that scores the job page you are on and keeps a ranked list of the jobs you've checked
 - [DECISIONS.md](DECISIONS.md): every design choice, why, and what was rejected
 - [EXPERIMENTS.md](EXPERIMENTS.md): every run and number
 - [PLAN.md](PLAN.md): the original plan and measurements
