@@ -278,4 +278,5 @@ input[role="switch"]:checked::before { transform: translateX(18px); background: 
 .advanced .small { margin-top: 10px; }
 .field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--muted); }
 #settings .privacy { margin-top: 0; }
-#version { margin-top: -18px; font-size: 11px; }
+#credits { margin-top: -18px; font-size: 11px; }
+#credits a { color: inherit; text-underline-offset: 2px; }

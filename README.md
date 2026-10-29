@@ -1,6 +1,6 @@
 <img alt="Lacuna: mind the gap, before you apply." src="assets/header-dark.png">
 
-Lacuna tells a job seeker how a job posting fits their CV, and where it doesn't: a fit score with an apply / stretch / skip verdict, whether they can work where the job requires, the seniority it asks for, and the posting's must-have requirements their CV does not cover, line by line. It runs in the browser on WebGPU, so the CV never leaves the person's device. *Lacuna* is Latin for "gap".
+Lacuna tells a job seeker how a job posting fits their CV, and where it doesn't: a fit score with an apply / stretch / skip verdict, whether they can work where the job requires, the seniority it asks for, and the posting's must-have requirements their CV does not cover, line by line. It runs in the browser on WebGPU, so the CV never leaves the person's device. *Lacuna* is Latin for "gap". Built by [Chillital](https://chillital.com), who also trained the models.
 
 - **Models** on Hugging Face: [Lacuna Celer](https://huggingface.co/lacuna-ai/lacuna-celer) (68M, 76 MB, the default) and [Lacuna Altus](https://huggingface.co/lacuna-ai/lacuna-altus) (395M, 790 MB)
 - **Chrome extension:** [install from the Chrome Web Store](https://chromewebstore.google.com/detail/lacuna/jlgkehmahinlnbnmnignpnkpnambnian), or [download the latest release](https://github.com/cucoleadan/lacuna-ai/releases/latest) (unzip, then *Load unpacked* in `chrome://extensions`); source in [`extension/`](extension/). A side panel that scores the job page you are on and keeps a ranked list of the jobs you've checked
@@ -46,4 +46,4 @@ Scraped job postings are not redistributed; code, prompts, model weights and eva
 
 Lacuna is a triage aid for job seekers, used on their own CV. It is not for screening or ranking candidates. Labels come from an LLM, not from recruiters; training CVs are synthetic; it works best on English postings; it treats US-only remote roles as closed to people outside the US.
 
-MIT licensed.
+MIT licensed. Made by [Chillital](https://chillital.com).

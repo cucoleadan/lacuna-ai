@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lacuna",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Mind the gap, before you apply. How a job posting fits your CV, scored on your device; your CV never leaves the browser.",
   "minimum_chrome_version": "121",
   "action": {
